@@ -5,7 +5,7 @@ from datetime import datetime
 
 ESSENTIAL_SERVICES = ['WlanSvc','Wcmsvc','WwanSvc','Wcncsvc','bthserv','BluetoothUserService','BTAGService','BthAvctpSvc','Audiosrv','AudioEndpointBuilder','MMCSS','MpsSvc','BFE','SharedAccess','WinDefend','WdNisSvc','Sense','SecurityHealthService','wuauserv','UsoSvc','BITS','DoSvc','WaaSMedicSvc','Dhcp','Dnscache','NlaSvc','Netman','Netprofm','iphlpsvc','lmhosts','WinHttpAutoProxySvc','RasMan','RemoteAccess','FrameServer','FrameServerMonitor','Audiosrv','AudioEndpointBuilder','MMCSS','hidserv','DeviceAssociationService','PlugPlay','SharedAccess','icssvc','WlanSvc','Spooler','PrintNotify']
 
-# This gives the list of all process which are not needed my AuraOS
+# This gives the list of all process which are not needed by AuraOS
 def get_blacklist():
     blacklist = [] 
     for each_process in psutil.process_iter(['name' , 'exe']):
@@ -18,7 +18,7 @@ def get_blacklist():
                 blacklist.append(each_process.info['name'])
     return blacklist 
 
-# This give the list of all process which are required by AuraOS
+# This give the list of all processes which are required by AuraOS
 def get_running_apps():
     apps = [] 
     blacklist = get_blacklist()
@@ -97,4 +97,3 @@ def get_security_status():
         security.setdefault('Firewall' , {}).update({item.Name:firewall_status(item.Enabled)})
     
     return security
-
