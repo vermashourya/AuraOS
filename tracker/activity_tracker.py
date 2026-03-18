@@ -1,5 +1,7 @@
 import psutil
 import subprocess
+import wmi
+from datetime import datetime
 
 ESSENTIAL_SERVICES = ['WlanSvc','Wcmsvc','WwanSvc','Wcncsvc','bthserv','BluetoothUserService','BTAGService','BthAvctpSvc','Audiosrv','AudioEndpointBuilder','MMCSS','MpsSvc','BFE','SharedAccess','WinDefend','WdNisSvc','Sense','SecurityHealthService','wuauserv','UsoSvc','BITS','DoSvc','WaaSMedicSvc','Dhcp','Dnscache','NlaSvc','Netman','Netprofm','iphlpsvc','lmhosts','WinHttpAutoProxySvc','RasMan','RemoteAccess','FrameServer','FrameServerMonitor','Audiosrv','AudioEndpointBuilder','MMCSS','hidserv','DeviceAssociationService','PlugPlay','SharedAccess','icssvc','WlanSvc','Spooler','PrintNotify']
 
@@ -57,4 +59,42 @@ def get_network_status():
         if 'Signal' in line:            
             network.setdefault('Wi-Fi' , {}).update({'signal':line.split(":")[1].strip()})
     
-    return network         
+    return network   
+
+# This is a helper function that convert the date and time from the wmi into user readable format
+def parse_wmi_date(date):
+    if not isinstance(date , str):
+        return 'Never'
+    else:
+        clean_date = datetime.strptime(date[:14] , "%Y%m%d%H%M%S")
+        return clean_date.strftime("%d %b %Y %H:%M")
+    
+# This is a helper function that gives the age of scans in correct format
+def parse_wmi_age(age):
+    if age is None or age == 4294967295 or age == -1:
+        return 'Never'
+    elif age == 0:
+        return 'Today'
+    else:
+        return str(age) + ' days ago'
+
+# This is a helper function that convertes the firewall status
+def firewall_status(fire):
+    if fire == 1:
+        return 'ON'
+    else:
+        return 'OFF'
+
+# This gives the firewall and defender status
+def get_security_status():
+    security = dict({})
+    w = wmi.WMI(namespace = 'root/microsoft/windows/defender')
+    for item in w.MSFT_MpComputerStatus():
+        security['Defender'] = {'status':item.AntivirusEnabled , 'protection status':item.RealTimeProtectionEnabled , 'out of date':getattr(item , 'DefenderSignaturesOutOfDate' , None) , 'last quick scan time':parse_wmi_date(item.QuickScanEndTime) , 'quick scan overdue':item.QuickScanOverdue , 'last quick scan':parse_wmi_age(getattr(item ,'QuickScanAge' , None)) , 'last full scan time':parse_wmi_date(item.FullScanEndTime) , 'full scan overdue':item.FullScanOverdue , 'last full scan':parse_wmi_age(getattr(item, 'FullScanAge' , None)) , 'reboot required':getattr(item , 'RebootRequired' , None)}
+
+    w2 = wmi.WMI(namespace = 'root/standardcimv2')
+    for item in w2.MSFT_NetFirewallProfile():
+        security.setdefault('Firewall' , {}).update({item.Name:firewall_status(item.Enabled)})
+    
+    return security
+
