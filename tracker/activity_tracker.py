@@ -133,5 +133,3 @@ def get_hardware_status():
         hardware.setdefault('GPU' , {}).update({'Name':gpu.Name , 'VRAM':str(round(gpu.AdapterRAM / (1024 ** 3) , 1)) + ' GB'})
 
     return hardware
-
-print(get_running_apps())
