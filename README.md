@@ -10,7 +10,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ Essential Windows services monitor
 - ✅ Network Status (WiFi , Bluetooth , Ethernet)
 - ✅ Security Status (Defender + Firewall)
-- 🛠 Audio Staus (in progress)
+- ✅ Audio Stauts (Volume , Mute , Device , Audio Source)
 
 ## Built by
 Shourya Verma — Started 4th semester, building something real.
