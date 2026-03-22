@@ -136,3 +136,15 @@ def get_power_status():
     power['Plugged in'] = battery.power_plugged
 
     return power
+
+# This gives the hardware status
+def get_hardware_status():
+    hardware = dict({})
+    hardware['CPU'] = {'Usage':psutil.cpu_percent() , 'Cores':psutil.cpu_count()}
+    hardware['RAM'] = {'Usage':psutil.virtual_memory().percent , 'Available':str(round(psutil.virtual_memory().available / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.virtual_memory().total / (1024 ** 3) , 1)) + ' GB'}
+    hardware['Disk'] = {'Usage':psutil.disk_usage('C:\\').percent , 'Available':str(round(psutil.disk_usage('C:\\').free / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.disk_usage('C:\\').total / (1024 ** 3) , 1)) + ' GB'}
+    w = wmi.WMI()
+    for gpu in w.Win32_VideoController():
+        hardware.setdefault('GPU' , {}).update({'Name':gpu.Name , 'VRAM':str(round(gpu.AdapterRAM / (1024 ** 3) , 1)) + ' GB'})
+
+    return hardware
