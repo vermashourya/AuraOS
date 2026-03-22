@@ -11,8 +11,8 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ Network Status (WiFi , Bluetooth , Ethernet)
 - ✅ Security Status (Defender + Firewall)
 - ✅ Audio Status (Volume , Mute , Device , Audio Source)
-- ✅ Power Status (Battery Percentage , Time Left , Plugged in)
-- 🛠 Hardware Status (in Progress)
+- ✅ Power Status (Battery Percentage , Charging)
+- ✅ Hardware Status (CPU , RAM , DISK , GPU)
 
 ## Built by
 Shourya Verma — Started 4th semester, building something real.
