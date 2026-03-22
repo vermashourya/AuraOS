@@ -12,30 +12,15 @@ from comtypes import CLSCTX_ALL
 # This is the list of all the essential services of windows
 ESSENTIAL_SERVICES = ['WlanSvc','Wcmsvc','WwanSvc','Wcncsvc','bthserv','BluetoothUserService','BTAGService','BthAvctpSvc','Audiosrv','AudioEndpointBuilder','MMCSS','MpsSvc','BFE','SharedAccess','WinDefend','WdNisSvc','Sense','SecurityHealthService','wuauserv','UsoSvc','BITS','DoSvc','WaaSMedicSvc','Dhcp','Dnscache','NlaSvc','Netman','Netprofm','iphlpsvc','lmhosts','WinHttpAutoProxySvc','RasMan','RemoteAccess','FrameServer','FrameServerMonitor','Audiosrv','AudioEndpointBuilder','MMCSS','hidserv','DeviceAssociationService','PlugPlay','SharedAccess','icssvc','WlanSvc','Spooler','PrintNotify']
 
-# This gives the list of all process which are not needed by AuraOS
-def get_blacklist():
-    blacklist = [] 
-    for each_process in psutil.process_iter(['name' , 'exe']):
-        if each_process.info['exe'] is None:
-            blacklist.append(each_process.info['name'])
-        if each_process.info['exe'] is not None and ':\\' in each_process.info['exe']:
-            if 'Windows\\System32' in each_process.info['exe']:
-                blacklist.append(each_process.info['name'])
-            if each_process.info['exe'].endswith('.tmp'):
-                blacklist.append(each_process.info['name'])
-
-    return blacklist 
-
 # This give the list of all processes which are required by AuraOS
 def get_running_apps():
     apps = [] 
-    blacklist = get_blacklist()
-    for each_process in psutil.process_iter(['name' , 'exe']):
-        if each_process.info['exe'] is not None and ':\\' in each_process.info['exe']:
-            if 'Windows\\System32' not in each_process.info['exe']:
-                if len(each_process.info['name']) < 35:
-                    if each_process.info['name'] not in blacklist:
-                        apps.append(each_process.info['name'])
+    w = wmi.WMI()
+    for process in w.Win32_Process():
+            if process.ExecutablePath is not None:
+                if 'WindowsApps\\Microsoft.' not in process.ExecutablePath:
+                    if 'C:\\Users' in process.ExecutablePath or 'C:\\Program Files' in process.ExecutablePath:
+                        apps.append(process.Name)
 
     return set(apps)
 
@@ -148,3 +133,5 @@ def get_hardware_status():
         hardware.setdefault('GPU' , {}).update({'Name':gpu.Name , 'VRAM':str(round(gpu.AdapterRAM / (1024 ** 3) , 1)) + ' GB'})
 
     return hardware
+
+print(get_running_apps())
