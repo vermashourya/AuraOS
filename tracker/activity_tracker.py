@@ -126,3 +126,13 @@ def get_audio_status():
             audio['Audio by'].append(session.Process.name())
 
     return audio
+
+# This gives the power status
+def get_power_status():
+    power = dict({})
+    battery = psutil.sensors_battery()
+    power['Percent'] = battery.percent 
+    power['Time Left'] = str(round(battery.secsleft / 60)) + ' mins'
+    power['Plugged in'] = battery.power_plugged
+
+    return power
