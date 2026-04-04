@@ -25,7 +25,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ Activity Tracker
 - ✅ Aura-OS Memory
 - ✅ main.py - Aura OS is live and running
-- ⬜ Pattern learning engine
+- ✅ Pattern learning engine
 - ⬜ Morning greeting with insights
 - ⬜ Smart notifications
 - ⬜ Dashboard UI
