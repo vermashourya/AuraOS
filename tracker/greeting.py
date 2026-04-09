@@ -23,6 +23,10 @@ def get_greeting():
     security = get_security_status()
     current_hour = datetime.now().hour
 
-    message = greeting_time + '\nBattery : ' + str(power['Percent']) + ' %' + '\nConnected to : ' + network['Wi-Fi']['name'] + ' ' + network['Wi-Fi']['signal'] + '\nYou usually use ' + top_app.get(current_hour , 'nothing specific') + ' at this hour' + '\nDefender is ' + ('Active' if security['Defender']['status'] else 'Inactive')
+    battery_info = str(power['Percent']) + ' %'
+    if power['Plugged in']:
+        battery_info += ' Charging'
+
+    message = greeting_time + '\nBattery : ' + battery_info + '\nConnected to : ' + network['Wi-Fi']['name'] + ' ' + network['Wi-Fi']['signal'] + '\nYou usually use ' + top_app.get(current_hour , 'nothing specific') + ' at this hour' + '\nDefender is ' + ('Active' if security['Defender']['status'] else 'Inactive')
 
     return message

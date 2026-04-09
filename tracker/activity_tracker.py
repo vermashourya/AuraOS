@@ -1,6 +1,7 @@
 # ACTIVITY TRACKER of AURA-OS
 # This unit tells the AURA-OS about all the activity of the system
 
+import os
 import psutil
 import subprocess
 import wmi
@@ -12,6 +13,9 @@ from comtypes import CLSCTX_ALL
 # This is the list of all the essential services of windows
 ESSENTIAL_SERVICES = ['WlanSvc','Wcmsvc','WwanSvc','Wcncsvc','bthserv','BluetoothUserService','BTAGService','BthAvctpSvc','Audiosrv','AudioEndpointBuilder','MMCSS','MpsSvc','BFE','SharedAccess','WinDefend','WdNisSvc','Sense','SecurityHealthService','wuauserv','UsoSvc','BITS','DoSvc','WaaSMedicSvc','Dhcp','Dnscache','NlaSvc','Netman','Netprofm','iphlpsvc','lmhosts','WinHttpAutoProxySvc','RasMan','RemoteAccess','FrameServer','FrameServerMonitor','Audiosrv','AudioEndpointBuilder','MMCSS','hidserv','DeviceAssociationService','PlugPlay','SharedAccess','icssvc','WlanSvc','Spooler','PrintNotify']
 
+# This will dynamically give the system drive name
+windows_drive = os.environ.get('SystemDrive' , 'C:') + '\\'
+
 # This give the list of all processes which are required by AuraOS
 def get_running_apps():
     apps = [] 
@@ -19,7 +23,7 @@ def get_running_apps():
     for process in w.Win32_Process():
             if process.ExecutablePath is not None:
                 if 'WindowsApps\\Microsoft.' not in process.ExecutablePath:
-                    if 'C:\\Users' in process.ExecutablePath or 'C:\\Program Files' in process.ExecutablePath:
+                    if windows_drive + 'Users' in process.ExecutablePath or windows_drive + 'Program Files' in process.ExecutablePath:
                         apps.append(process.Name)
 
     return set(apps)
@@ -41,6 +45,8 @@ def get_network_status():
         if 'Bluetooth' in iface:
             network['Bluetooth'] = {'status':stat.isup , 'speed':stat.speed}
         if 'Local Area Connection' in iface:
+            network['Ethernet'] = {'status':stat.isup , 'speed':stat.speed}
+        elif 'Ethernet' in iface:
             network['Ethernet'] = {'status':stat.isup , 'speed':stat.speed}
     
     result = subprocess.check_output(['netsh','wlan','show','interfaces'] , text = True)
@@ -96,26 +102,31 @@ def get_security_status():
 # This gives the audio status 
 def get_audio_status():
     audio = dict({})
-    device = AudioUtilities.GetSpeakers()
-    volume = device.EndpointVolume
-    audio['Volume'] = int(volume.GetMasterVolumeLevelScalar() * 100)
-    if volume.GetMute() == 1:
-        audio['Mute'] = True
-    else:
-        audio['Mute'] = False
-    audio['Device'] = device.FriendlyName
-    sessions = AudioUtilities.GetAllSessions()
-    audio['Audio by'] = []
-    for session in sessions:
-        if session.Process and session.State == 1:
-            audio['Audio by'].append(session.Process.name())
+    try:
+        device = AudioUtilities.GetSpeakers()
+        volume = device.EndpointVolume
+        audio['Volume'] = int(volume.GetMasterVolumeLevelScalar() * 100)
+        audio['Mute'] = volume.GetMute() == 1
+        audio['Device'] = device.FriendlyName
+        sessions = AudioUtilities.GetAllSessions()
+        audio['Audio by'] = []
+        for session in sessions:
+            if session.Process and session.State == 1:
+                audio['Audio by'].append(session.Process.name())
 
-    return audio
+        return audio
+    
+    except:
+        return {'Volume' : None , 'Mute' : None , 'Device' : 'No Audio Device'}
 
 # This gives the power status
 def get_power_status():
     power = dict({})
     battery = psutil.sensors_battery()
+    
+    if battery is None:
+        return {'Percent' : None , 'Time Left' : None , 'Plugged in' : True}
+    
     power['Percent'] = battery.percent 
     power['Time Left'] = str(round(battery.secsleft / 60)) + ' mins'
     power['Plugged in'] = battery.power_plugged
@@ -127,7 +138,7 @@ def get_hardware_status():
     hardware = dict({})
     hardware['CPU'] = {'Usage':psutil.cpu_percent() , 'Cores':psutil.cpu_count()}
     hardware['RAM'] = {'Usage':psutil.virtual_memory().percent , 'Available':str(round(psutil.virtual_memory().available / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.virtual_memory().total / (1024 ** 3) , 1)) + ' GB'}
-    hardware['Disk'] = {'Usage':psutil.disk_usage('C:\\').percent , 'Available':str(round(psutil.disk_usage('C:\\').free / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.disk_usage('C:\\').total / (1024 ** 3) , 1)) + ' GB'}
+    hardware['Disk'] = {'Usage':psutil.disk_usage(windows_drive).percent , 'Available':str(round(psutil.disk_usage(windows_drive).free / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.disk_usage(windows_drive).total / (1024 ** 3) , 1)) + ' GB'}
     w = wmi.WMI()
     for gpu in w.Win32_VideoController():
         hardware.setdefault('GPU' , {}).update({'Name':gpu.Name , 'VRAM':str(round(gpu.AdapterRAM / (1024 ** 3) , 1)) + ' GB'})
