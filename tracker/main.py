@@ -4,6 +4,7 @@
 import time
 from datetime import datetime
 import wmi
+from greeting import get_greeting
 from activity_tracker import parse_wmi_date , get_audio_status , get_essential_services , get_hardware_status , get_network_status , get_power_status , get_running_apps , get_security_status
 from aura_memory import create_database , save_sessions , save_snapshots , get_sessions , update_logout
 
@@ -21,6 +22,7 @@ def start_aura():
     network = get_network_status()
     power = get_power_status()
     session_id = save_sessions(login_time , network['Wi-Fi']['name'] , power['Percent'])
+    print((get_greeting()))
     print('aura_os started!')
     return session_id
 
