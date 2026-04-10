@@ -14,6 +14,9 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ Power Status (Battery Percentage , Charging)
 - ✅ Hardware monitoring (CPU , RAM , DISK , GPU)
 - ✅ SQLite memory database
+- ✅ Pattern learning engine
+- ✅ Morning greeting with insights
+- ✅ Smart notifications
 
 ## Tech Stack
 - Python
