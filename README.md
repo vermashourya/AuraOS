@@ -20,9 +20,10 @@ and guides you every time you log in — like JARVIS for your computer.
 
 ## Tech Stack
 - Python
-- psutil , WMI , pywifi , pycaw
+- psutil , WMI , pywifi , pycaw , plyer
 - subprocess
 - SQLite
+- FastAPI
 
 ## Roadmap
 - ✅ Activity Tracker
