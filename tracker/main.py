@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 import wmi
 from greeting import get_greeting
+from notifications import run_checks
 from activity_tracker import parse_wmi_date , get_hardware_status , get_network_status , get_power_status , get_running_apps
 from aura_memory import create_database , save_sessions , save_snapshots , get_sessions , update_logout
 
@@ -52,6 +53,7 @@ def take_snapshot(session_id):
     hardware_status = get_hardware_status()
     network = get_network_signal(get_network_status())
     save_snapshots(session_id , current_time , running_apps , power['Percent'] , hardware_status['CPU']['Usage'] , hardware_status['RAM']['Usage'] , network)
+    run_checks()
     print('snapshot taken!')
 
 # This will stop Aura-OS and update logout time
