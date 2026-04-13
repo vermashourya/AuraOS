@@ -114,8 +114,7 @@ def get_audio_status():
             if session.Process and session.State == 1:
                 audio['Audio by'].append(session.Process.name())
 
-        return audio
-    
+        return audio    
     except:
         return {'Volume' : None , 'Mute' : None , 'Device' : 'No Audio Device'}
 
@@ -128,7 +127,7 @@ def get_power_status():
         return {'Percent' : None , 'Time Left' : None , 'Plugged in' : True}
     
     power['Percent'] = battery.percent 
-    power['Time Left'] = str(round(battery.secsleft / 60)) + ' mins'
+    power['Time Left'] = str(round(battery.secsleft / (60))) + ' mins'
     power['Plugged in'] = battery.power_plugged
 
     return power
