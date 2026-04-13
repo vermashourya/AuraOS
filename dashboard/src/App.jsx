@@ -144,7 +144,6 @@ function App(){
           </NavCard>
         }
       </div>
-
       
     </div>
   )
