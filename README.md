@@ -32,7 +32,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ Pattern learning engine
 - ✅ Morning greeting with insights
 - ✅ Smart notifications
-- ⬜ Dashboard UI
+- ✅ Dashboard UI
 - ⬜ Voice interaction
 
 ## Built by
