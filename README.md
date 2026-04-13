@@ -24,6 +24,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - subprocess
 - SQLite
 - FastAPI
+- React
 
 ## Roadmap
 - ✅ Activity Tracker
