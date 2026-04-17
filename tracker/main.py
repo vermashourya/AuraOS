@@ -2,8 +2,11 @@
 # This is the heart of Aura-OS - brings everything alive
 
 import time
+import threading
+import time
 from datetime import datetime
 import wmi
+import pythoncom
 from greeting import get_greeting
 from notifications import run_checks
 from activity_tracker import parse_wmi_date , get_hardware_status , get_network_status , get_power_status , get_running_apps
@@ -33,6 +36,13 @@ def get_login_time():
     for session in w.Win32_LogonSession():
         if session.LogonType == 2:
             return parse_wmi_date(session.StartTime)
+
+# This will check and give notifications 
+def run_check_loop():
+    pythoncom.CoInitialize()
+    while(True):
+        run_checks()
+        time.sleep(30)
         
 # This will start the Aura-OS and return session-id
 def start_aura():
@@ -43,6 +53,8 @@ def start_aura():
     session_id = save_sessions(login_time , network , power['Percent'])
     print((get_greeting()))
     print('aura_os started!')
+    check_thread = threading.Thread(target=run_check_loop, daemon=True)
+    check_thread.start()
     return session_id
 
 # This will take snapshot 
@@ -53,7 +65,6 @@ def take_snapshot(session_id):
     hardware_status = get_hardware_status()
     network = get_network_signal(get_network_status())
     save_snapshots(session_id , current_time , running_apps , power['Percent'] , hardware_status['CPU']['Usage'] , hardware_status['RAM']['Usage'] , network)
-    run_checks()
     print('snapshot taken!')
 
 # This will stop Aura-OS and update logout time
@@ -69,4 +80,4 @@ if __name__ == '__main__':
             take_snapshot(session_id)
             time.sleep(300)
     except KeyboardInterrupt:
-        stop_aura(session_id)       
+        stop_aura(session_id)  
