@@ -48,17 +48,47 @@ function App(){
   const[time , setTime] = useState(new Date())
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/greeting').then(response => setGreeting(response.data.message)),
-    axios.get('http://127.0.0.1:8000/network').then(response => setNetwork(response.data))
-    axios.get('http://127.0.0.1:8000/hardware').then(response => setSystem(response.data))
-    axios.get('http://127.0.0.1:8000/security').then(response => setSecurity(response.data))
-    axios.get('http://127.0.0.1:8000/apps').then(response => setApps(response.data.apps))
-    axios.get('http://127.0.0.1:8000/audio').then(response => setAudio(response.data))
-    axios.get('http://127.0.0.1:8000/battery').then(response => setBattery(response.data)) 
-    const timeInterval = setInterval(() => setTime(new Date()) , 1000)
-    return () => clearInterval(timeInterval)   
-  }, [])
+    axios.get('http://127.0.0.1:8000/greeting').then(response => setGreeting(response.data.message)) 
 
+    const fetchFastData = async() =>{
+      try{
+        const r1 = await axios.get('http://127.0.0.1:8000/hardware'); 
+        setSystem(r1.data);
+        const r2 = await axios.get('http://127.0.0.1:8000/battery'); 
+        setBattery(r2.data);
+        const r3 = await axios.get('http://127.0.0.1:8000/audio');
+        setAudio(r3.data);
+      }
+      catch (error){
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchFastData()
+    const fastData = setInterval(fetchFastData, 2000);
+
+    const fetchSlowData = async() =>{
+      try{
+        const r1 = await axios.get('http://127.0.0.1:8000/network');
+        setNetwork(r1.data);
+        const r2 = await axios.get('http://127.0.0.1:8000/security');
+        setSecurity(r2.data);
+        const r3 = await axios.get('http://127.0.0.1:8000/apps');
+        setApps(r3.data.apps);
+      }
+      catch (error){
+        console.error('Error Fetching data:', error);
+      }
+    }
+    fetchSlowData()
+    const slowData = setInterval(fetchSlowData, 30000)
+
+    const timeInterval = setInterval(() => setTime(new Date()) , 1000)
+    return () => {
+      clearInterval(timeInterval) 
+      clearInterval(fastData)
+      clearInterval(slowData)
+    }
+  }, [])
 
   return (
     <div style={{background:isDark?'#000000':'#fffff0', minHeight:'100vh', color:isDark?'white':'#0a1a0f', padding:'32px', fontFamily:"'Space Grotesk', sans-serif"}}>
@@ -129,7 +159,7 @@ function App(){
             <NavCardInfoRow label={"GPU VRAM :"} value={system?.['GPU']?.[0]?.VRAM} isDark={isDark}/>
             <NavCardInfoRow label={"Battery :"} value={battery?.['Percent']} isDark={isDark}/>
             <ProgressBar value={battery?.Percent} color={battery?.Percent > 50 ?'#4ade80':battery?.Percent >20?'#fb923c':'#ef4444'} isDark={isDark}/>
-            <NavCardInfoRow label={"Battery Timeleft :"} value={battery?.['Time Left']} isDark={isDark}/>
+            <NavCardInfoRow label={"Battery Timeleft :"} value={(battery?.['Time Left'])} isDark={isDark}/>
             <NavCardInfoRow label={"Battery Charging :"} value={battery?.['Plugged in']?'Charging':'Not Charging'} isDark={isDark}/>
           </NavCard>
         }

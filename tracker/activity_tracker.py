@@ -5,6 +5,7 @@ import os
 import psutil
 import subprocess
 import wmi
+import time
 from datetime import datetime
 from pycaw.pycaw import AudioUtilities , IAudioEndpointVolume
 from ctypes import cast , POINTER
@@ -128,7 +129,14 @@ def get_power_status():
         return {'Percent' : None , 'Time Left' : None , 'Plugged in' : True}
     
     power['Percent'] = battery.percent 
-    power['Time Left'] = str(round(battery.secsleft / (60))) + ' mins'
+    # power['Time Left'] = str(round(battery.secsleft / (60 * 60 * 60))) + ' mins'
+    if battery.power_plugged:
+        power['Time Left'] = '~'
+    elif battery.secsleft == -1 or battery.secsleft > 86400:
+        power['Time Left'] = 'Calculating...'
+    else:
+        sec = battery.secsleft
+        power['Time Left'] = str(time.strftime("%H:%M", time.gmtime(sec))) + ' hrs'
     power['Plugged in'] = battery.power_plugged
 
     return power
