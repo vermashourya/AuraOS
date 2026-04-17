@@ -18,11 +18,19 @@ function NavCard({title, children, isDark}){
   )
 }
 
-function NavCardInfoRow({label, value, isDark}){
+function NavCardInfoRow({label, value, isDark, valueColor}){
   return(
     <div style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:isDark?'1px solid #1a3a28':'1px solid #d0c8b0'}}>
       <span style={{color:isDark?'#6b9e7a':'#8a7a6a'}}>{label}</span>
-      <span style={{color:isDark?'#6b9e7a':'#382f2e', fontWeight:'500'}}>{value}</span>
+      <span style={{color: valueColor || (isDark?'#6b9e7a':'#382f2e'), fontWeight:'500'}}>{value}</span>
+    </div>
+  )
+}
+
+function ProgressBar({value, color, isDark}){
+  return(
+    <div style={{width:'100%', borderRadius:'20px', backgroundColor:isDark?'#2a2a2a':'#fffff0', height:'6px'}}>
+      <div style={{borderRadius:'20px', backgroundColor:color, width:value +'%', height:'6px'}}></div>
     </div>
   )
 }
@@ -47,17 +55,17 @@ function App(){
     axios.get('http://127.0.0.1:8000/apps').then(response => setApps(response.data.apps))
     axios.get('http://127.0.0.1:8000/audio').then(response => setAudio(response.data))
     axios.get('http://127.0.0.1:8000/battery').then(response => setBattery(response.data)) 
-    const timeInterval = setInterval(() => setTime(new Date() , 1000))
+    const timeInterval = setInterval(() => setTime(new Date()) , 1000)
     return () => clearInterval(timeInterval)   
   }, [])
 
 
   return (
-    <div style={{background:isDark?'#000000':'#fffff0', minHeight:'100vh', color:isDark?'white':'#0a1a0f', padding:'32px', fontFamily:'sans-serif'}}>
+    <div style={{background:isDark?'#000000':'#fffff0', minHeight:'100vh', color:isDark?'white':'#0a1a0f', padding:'32px', fontFamily:"'Space Grotesk', sans-serif"}}>
 
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'24px'}}>
         <div>
-          <h1 style={{color:isDark?'#4ade80':'#382f2e', fontSize:'32px'}}>
+          <h1 style={{color:isDark?'#4ade80':'#382f2e', fontSize:'40px', fontWeight:'700', letterSpacing:'-1'}}>
             Aura OS
           </h1>
           <p style={{color:isDark?'#4ade80':'#382f2e', fontSize:'14px'}}>
@@ -69,7 +77,7 @@ function App(){
           <button onClick={() => setIsDark(!isDark)} style={{backgroundColor:'#4ade80', color:'#0a1a0f', border:'none', padding:'8px 16px', borderRadius:'8px', cursor:'pointer'}}>
             Toggle theme
           </button>
-          <p style={{border:'none', padding:'8px 16px', borderRadius:'8px'}}>
+          <p style={{border:'none', padding:'8px 16px', borderRadius:'8px', fontFamily:"'JetBrains Mono', monospace", fontSize:'14px'}}>
             {time.toLocaleTimeString()}
           </p>
         </div>
@@ -100,30 +108,35 @@ function App(){
           <NavCard title={"Network Status"} isDark={isDark}>
             <NavCardInfoRow label={'Wifi Name:'} value={network?.['Wi-Fi']?.name} isDark={isDark}/>
             <NavCardInfoRow label={"Wifi Strength:"} value={network?.['Wi-Fi']?.signal} isDark={isDark}/>
+            <ProgressBar value={parseInt(network?.['Wi-Fi']?.signal)} color={parseInt(network?.['Wi-Fi']?.signal) > 70 ?'#4ade80':parseInt(network?.['Wi-Fi']?.signal) > 30 ?'#fb923c':'#ef4444'} isDark={isDark}/>
             <NavCardInfoRow label={"Wifi Speed:"} value={network?.['Wi-Fi']?.speed} isDark={isDark}/>
           </NavCard>   
         }
         {activeTab == 'System' &&
           <NavCard title={"System Information"} isDark={isDark}>
             <NavCardInfoRow label={"CPU Usage :"} value={String(system?.['CPU']?.Usage)+' %'} isDark={isDark}/>
+            <ProgressBar value={system?.['CPU']?.Usage} color={isDark?'#4ade80':'#382f2e'} isDark={isDark}/>
             <NavCardInfoRow label={"CPU Cores :"} value={system?.['CPU']?.Cores} isDark={isDark}/>
             <NavCardInfoRow label={"RAM Usage :"} value={String(system?.['RAM']?.Usage)+' %'} isDark={isDark}/>
+            <ProgressBar value={system?.['RAM']?.Usage} color={isDark?'#60a5fa':'#800000'} isDark={isDark}/>
             <NavCardInfoRow label={"RAM Available :"} value={system?.['RAM']?.Available} isDark={isDark}/>
             <NavCardInfoRow label={"RAM Total :"} value={system?.['RAM']?.Total} isDark={isDark}/>
-            <NavCardInfoRow label={"Disk Uage :"} value={String(system?.['Disk']?.Usage)+' %'} isDark={isDark}/>
+            <NavCardInfoRow label={"Disk Usage :"} value={String(system?.['Disk']?.Usage)+' %'} isDark={isDark}/>
+            <ProgressBar value={system?.['Disk']?.Usage} color={isDark?'#fb923c':'#556b2f'} isDark={isDark}/>
             <NavCardInfoRow label={"Disk Available :"} value={system?.['Disk']?.Available} isDark={isDark}/>
             <NavCardInfoRow label={"Disk Total :"} value={system?.['Disk']?.Total} isDark={isDark}/>
             <NavCardInfoRow label={"GPU Name :"} value={system?.['GPU']?.[0]?.Name} isDark={isDark}/>
             <NavCardInfoRow label={"GPU VRAM :"} value={system?.['GPU']?.[0]?.VRAM} isDark={isDark}/>
             <NavCardInfoRow label={"Battery :"} value={battery?.['Percent']} isDark={isDark}/>
+            <ProgressBar value={battery?.Percent} color={battery?.Percent > 50 ?'#4ade80':battery?.Percent >20?'#fb923c':'#ef4444'} isDark={isDark}/>
             <NavCardInfoRow label={"Battery Timeleft :"} value={battery?.['Time Left']} isDark={isDark}/>
             <NavCardInfoRow label={"Battery Charging :"} value={battery?.['Plugged in']?'Charging':'Not Charging'} isDark={isDark}/>
           </NavCard>
         }
         {activeTab == 'Security' &&
-          <NavCard title={"Security Information"} isDark={isDark}>
-            <NavCardInfoRow label={"Defender status :"} value={security?.['Defender']?.status?'On':'Off'} isDark={isDark}/>
-            <NavCardInfoRow label={"Defender Real-Time Protection :"} value={security?.['Defender']?.['protection status']?'On':'Off'} isDark={isDark}/>
+          <NavCard title={"Security Information"} isDark={isDark}> 
+            <NavCardInfoRow label={"Defender status :"} value={security?.['Defender']?.status?'On':'Off'} isDark={isDark} valueColor={security?.['Defender']?.status ? '#4ade80':'#ef4444'}/>
+            <NavCardInfoRow label={"Defender Real-Time Protection :"} value={security?.['Defender']?.['protection status']?'On':'Off'} isDark={isDark} valueColor={security?.['Defender']?.['protection status'] ? '#4ade80':'#ef4444'}/>
           </NavCard>
         }
         {activeTab == 'Apps' &&
@@ -138,6 +151,7 @@ function App(){
         {activeTab == 'Audio' && 
           <NavCard title={"Audio Information"} isDark={isDark}>
             <NavCardInfoRow label={"Volume :"} value={audio?.Volume} isDark={isDark}/>
+            <ProgressBar value={audio?.Volume} color={audio?.Volume > 70 ?'#ef4444':audio?.Volume > 30?'#4ade80':'grey'} isDark={isDark}/>
             <NavCardInfoRow label={"Mute :"} value={audio?.Mute?'Muted':'Not Muted'} isDark={isDark}/>
             <NavCardInfoRow label={"Device :"} value={audio?.Device} isDark={isDark}/>
             <NavCardInfoRow label={"Audio playing by :"} value={audio?.['Audio by']?.join(', ') || 'Nothing Playing'} isDark={isDark}/>

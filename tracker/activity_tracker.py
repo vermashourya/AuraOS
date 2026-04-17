@@ -24,7 +24,8 @@ def get_running_apps():
             if process.ExecutablePath is not None:
                 if 'WindowsApps\\Microsoft.' not in process.ExecutablePath:
                     if windows_drive + 'Users' in process.ExecutablePath or windows_drive + 'Program Files' in process.ExecutablePath:
-                        apps.append(process.Name)
+                        if len(process.Name) < 35:
+                            apps.append(process.Name)
 
     return set(apps)
 
