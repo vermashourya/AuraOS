@@ -26,8 +26,8 @@ and guides you every time you log in — like JARVIS for your computer.
 - FastAPI
 - React
 
-# Roadmap
-## Phase 1 - Foundation 
+## Roadmap
+### Phase 1 - Foundation 
 - ✅ activity_tracker.py   →  monitors all system activity
 - ✅ aura_memory.py        →  SQLite database memory
 - ✅ pattern_engine.py     →  learns your usage patterns
@@ -36,7 +36,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ main.py               →  brings everything alive
 - ✅ api.py                →  FastAPI backend
 
-## Phase 2 - Dashboard
+### Phase 2 - Dashboard
 - ✅ React dashboard
 - ✅ Dark/light theme
 - ✅ Typography (Space Grotesk + JetBrains Mono fonts)
@@ -48,7 +48,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ All 6 tabs working
 - ⬜ Polish and animation
 
-## Phase 3 - Intelligence
+### Phase 3 - Intelligence
 - ⬜ Better pattern analysis
      - peak productivity hours
      - most used apps by time of day
