@@ -84,9 +84,9 @@ def parse_wmi_age(age):
 # This is a helper function for get_security_status() that convertes the firewall status
 def firewall_status(fire):
     if fire == 1:
-        return 'ON'
+        return 'On'
     else:
-        return 'OFF'
+        return 'Off'
 
 # This gives the firewall and defender status
 def get_security_status():
