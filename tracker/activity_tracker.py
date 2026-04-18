@@ -144,7 +144,7 @@ def get_power_status():
 # This gives the hardware status
 def get_hardware_status():
     hardware = dict({})
-    hardware['CPU'] = {'Usage':psutil.cpu_percent() , 'Cores':psutil.cpu_count()}
+    hardware['CPU'] = {'Usage':psutil.cpu_percent(interval=1) , 'Cores':psutil.cpu_count()}
     hardware['RAM'] = {'Usage':psutil.virtual_memory().percent , 'Available':str(round(psutil.virtual_memory().available / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.virtual_memory().total / (1024 ** 3) , 1)) + ' GB'}
     hardware['Disk'] = {'Usage':psutil.disk_usage(windows_drive).percent , 'Available':str(round(psutil.disk_usage(windows_drive).free / (1024 ** 3) , 1)) + ' GB' , 'Total':str(round(psutil.disk_usage(windows_drive).total / (1024 ** 3) , 1)) + ' GB'}
     w = wmi.WMI()

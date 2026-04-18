@@ -35,6 +35,20 @@ function ProgressBar({value, color, isDark}){
   )
 }
 
+function Home({label, value, isDark, valueColor, bar}){
+  return(
+    <div style={{display:'flex', alignItems:'center', padding:'8px 0', borderBottom:isDark?'1px solid #1a3a28':'1px solid #d0c8b0'}}>
+      <span style={{flex:'1', color:isDark?'#6b9e7a':'#8a7a6a'}}> {label} </span>
+      {bar && (
+        <div style={{flex:'2', display:'flex', justifyContent:'center'}}>
+          <ProgressBar value={value} isDark={isDark} color={valueColor}/>
+        </div>
+      )}
+      <span style={{flex:'1', textAlign:'right', color:valueColor || (isDark?'#6b9e80':'#382f2e'), fontWeight:'500', fontFamily:'JetBrains Mono'}}>{value}</span>
+    </div>
+  )
+}
+
 function App(){
   const[isDark , setIsDark] = useState(true)
   const[greeting, setGreeting] = useState('')
@@ -131,8 +145,38 @@ function App(){
       </div>
 
       <div>
-        {activeTab == 'Home' && 
-          <NavCard title={"Home"} isDark={isDark}><p>Welcome to aura os</p></NavCard> 
+        {activeTab == 'Home' &&            
+          <div>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'16px'}}>
+              <div>
+                <NavCard title={'Quick Stat'} isDark={isDark}>
+                  <Home label={'Battery'} value={battery?.['Percent']} isDark={isDark} bar={true} valueColor={battery?.Percent > 50 ?'#4ade80':battery?.Percent >20?'#fb923c':'#ef4444'}/>
+                  <Home label={'Wi-Fi'} value={network?.['Wi-Fi']?.name} isDark={isDark}/>
+                </NavCard>
+              </div>
+              <div>
+                <NavCard title={'System Health'} isDark={isDark}>
+                  <Home label={'CPU'} value={system?.['CPU']?.Usage} isDark={isDark} bar={true} valueColor={isDark?'#4ade80':'#382f2e'}/> 
+                  <Home label={'RAM'} value={system?.['RAM']?.Usage} isDark={isDark} bar={true} valueColor={isDark?'#60a5fa':'#800000'}/>
+                </NavCard>
+              </div>
+              <div>
+                <NavCard title={'Active Apps'} isDark={isDark}>
+                  {apps?.map(app => (
+                    <span key={app} style={{display:'inline-block', background:isDark?'#1a3a28':'#d0c8b0', color:isDark?'#4ade80':'#382f2e', padding:'4px 12px', borderRadius:'20px', fontSize:'13px', margin:'4px'}} >
+                      {app.replace('.exe','')}
+                    </span>
+                  ))}
+                </NavCard>
+              </div>
+              <div>
+                <NavCard title={'Security Status'} isDark={isDark}>
+                  <Home label={'Defender'} value={security?.['Defender']?.['protection status']?'On':'Off'} isDark={isDark} valueColor={security?.['Defender']?.status ? '#4ade80':'#ef4444'}/>
+                  {/* <Home label={'FireWall'} value={security?.['Firewall']} isDark={isDark}/> */}
+                </NavCard>
+              </div>
+            </div>
+          </div>
         }
         {activeTab == 'Network' && 
           <NavCard title={"Network Status"} isDark={isDark}>
