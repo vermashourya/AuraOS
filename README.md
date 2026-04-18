@@ -28,50 +28,50 @@ and guides you every time you log in — like JARVIS for your computer.
 
 # Roadmap
 ## Phase 1 - Foundation 
-- [x] activity_tracker.py   →  monitors all system activity
-- [x] aura_memory.py        →  SQLite database memory
-- [x] pattern_engine.py     →  learns your usage patterns
-- [x] greeting.py           →  personalized morning greeting
-- [x] notifications.py      →  smart system alerts
-- [x] main.py               →  brings everything alive
-- [x] api.py                →  FastAPI backend
+- ✅ activity_tracker.py   →  monitors all system activity
+- ✅ aura_memory.py        →  SQLite database memory
+- ✅ pattern_engine.py     →  learns your usage patterns
+- ✅ greeting.py           →  personalized morning greeting
+- ✅ notifications.py      →  smart system alerts
+- ✅ main.py               →  brings everything alive
+- ✅ api.py                →  FastAPI backend
 
 ## Phase 2 - Dashboard
-- [x] React dashboard
-- [x] Dark/light theme
-- [x] Typography (Space Grotesk + JetBrains Mono fonts)
-- [x] Progress bars (CPU, RAM, Disk, Battery, WiFi)
-- [x] Color coded status indicators
-- [x] Live updating (2s fast, 30s slow)
-- [x] Home tab overview grid
-- [x] Background notifications thread
-- [x] All 6 tabs working
-⬜ Polish and animation
+- ✅ React dashboard
+- ✅ Dark/light theme
+- ✅ Typography (Space Grotesk + JetBrains Mono fonts)
+- ✅ Progress bars (CPU, RAM, Disk, Battery, WiFi)
+- ✅ Color coded status indicators
+- ✅ Live updating (2s fast, 30s slow)
+- ✅ Home tab overview grid
+- ✅ Background notifications thread
+- ✅ All 6 tabs working
+- ⬜ Polish and animation
 
 ## Phase 3 - Intelligence
-⬜ Better pattern analysis
+- ⬜ Better pattern analysis
      - peak productivity hours
      - most used apps by time of day
      - battery drain patterns
      - network usage patterns
 
-⬜ Productivity insights
+- ⬜ Productivity insights
      - daily session reports
      - weekly usage summary
      - "You were most productive on Tuesday"
 
-⬜ Anomaly detection
+- ⬜ Anomaly detection
      - unusual login times
      - "You don't usually turn on at 3am — everything ok?"
      - unusual app usage
      - sudden CPU/RAM spikes
 
-⬜ Smarter greeting
+- ⬜ Smarter greeting
      - personalized based on patterns
      - weather integration
      - calendar awareness (if connected)
 
-⬜ Usage predictions
+- ⬜ Usage predictions
      - "Based on your pattern, you'll need to charge in 2 hours"
      - "You usually open VS Code around this time"
 
