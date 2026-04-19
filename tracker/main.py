@@ -10,7 +10,8 @@ import pythoncom
 from greeting import get_greeting
 from notifications import run_checks
 from activity_tracker import parse_wmi_date , get_hardware_status , get_network_status , get_power_status , get_running_apps
-from aura_memory import create_database , save_sessions , save_snapshots , get_sessions , update_logout
+from aura_memory import create_database , save_sessions , save_snapshots , update_logout
+from anomaly_engine import check_login_anomaly
 
 # This will give the network name
 def get_network_name(network):
@@ -52,6 +53,7 @@ def start_aura():
     power = get_power_status()
     session_id = save_sessions(login_time , network , power['Percent'])
     print((get_greeting()))
+    check_login_anomaly()
     print('aura_os started!')
     check_thread = threading.Thread(target=run_check_loop, daemon=True)
     check_thread.start()
