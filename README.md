@@ -60,7 +60,7 @@ and guides you every time you log in — like JARVIS for your computer.
      - weekly usage summary
      - "You were most productive on Tuesday"
 
-- ⬜ Anomaly detection
+- ✅ Anomaly detection
      - unusual login times
      - "You don't usually turn on at 3am — everything ok?"
      - unusual app usage
