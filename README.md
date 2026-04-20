@@ -1,3 +1,5 @@
+# 🚧👷‍♂️ UNDER CONSTRUCTION 👷‍♂️🚧
+
 # AuraOS 
 
 An AI-native desktop layer that learns you.
