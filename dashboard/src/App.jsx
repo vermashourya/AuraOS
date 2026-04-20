@@ -60,6 +60,7 @@ function App(){
   const[audio, setAudio] = useState(null)
   const[battery, setBattery] = useState(null)
   const[time , setTime] = useState(new Date())
+  const[productivity, setProductivity] = useState(null)
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/greeting').then(response => setGreeting(response.data.message)) 
@@ -88,6 +89,8 @@ function App(){
         setSecurity(r2.data);
         const r3 = await axios.get('http://127.0.0.1:8000/apps');
         setApps(r3.data.apps);
+        const r4 = await axios.get('http://127.0.0.1:8000/productivity');
+        setProductivity(r4.data);
       }
       catch (error){
         console.error('Error Fetching data:', error);
@@ -175,6 +178,14 @@ function App(){
                   {/* <Home label={'FireWall'} value={security?.['Firewall']} isDark={isDark}/> */}
                 </NavCard>
               </div>
+            </div>
+            <div>
+              <NavCard title={'Productivity Report'} isDark={isDark}>
+                <Home label={'Total Sessions'} value={productivity?.['total_session']} isDark={isDark}/>
+                <Home label={'Avg Duration'} value={productivity?.['avg_duration']? (productivity['avg_duration'] / 60).toFixed(1) + ' hrs' : '—'} isDark={isDark}/>
+                <Home label={'Productive Day'} value={productivity?.['most_productive_day']} isDark={isDark}/>
+                <Home label={'Peak Hours'} value={productivity?.['peak_hours']?.map(h => h[0] + ':00').join(', ')} isDark={isDark}/>
+              </NavCard>
             </div>
           </div>
         }

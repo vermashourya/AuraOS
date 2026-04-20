@@ -1,6 +1,7 @@
 from datetime import datetime
 from activity_tracker import get_power_status , get_network_status , get_security_status
 from pattern_engine import get_top_app_per_hour
+from productivity_engine import get_productivity_report
 
 # This will give the greeting according to the time
 def get_greeting_time():
@@ -27,6 +28,10 @@ def get_greeting():
     if power['Plugged in']:
         battery_info += ' Charging'
 
-    message = greeting_time + '\nBattery : ' + battery_info + '\nConnected to : ' + network['Wi-Fi']['name'] + ' ' + network['Wi-Fi']['signal'] + '\nYou usually use ' + top_app.get(current_hour , 'nothing specific') + ' at this hour' + '\nDefender is ' + ('Active' if security['Defender']['status'] else 'Inactive')
+    report = get_productivity_report()
+
+    message = greeting_time + '\nBattery : ' + battery_info + '\nConnected to : ' + network['Wi-Fi']['name'] + ' ' + network['Wi-Fi']['signal'] + '\nYou usually use ' + top_app.get(current_hour , 'nothing specific') + ' at this hour' + '\nDefender is ' + ('Active' if security['Defender']['status'] else 'Inactive') + '\nTotal Session :' + str(report["total_session"]) + '\nAverage Work Duration :' + str(report["avg_duration"]) + '\nMost Productive Day :' + report["most_productive_day"] + '\nPeak working hours :' + str(report["peak_hours"])
 
     return message
+
+print(get_greeting())

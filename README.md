@@ -17,6 +17,8 @@ and guides you every time you log in — like JARVIS for your computer.
 - ✅ Pattern learning engine
 - ✅ Morning greeting with insights
 - ✅ Smart notifications
+- ✅ Anomaly detection
+- ✅ Productive Insights
 
 ## Tech Stack
 - Python
@@ -55,7 +57,7 @@ and guides you every time you log in — like JARVIS for your computer.
      - battery drain patterns
      - network usage patterns
 
-- ⬜ Productivity insights
+- ✅ Productivity insights
      - daily session reports
      - weekly usage summary
      - "You were most productive on Tuesday"
