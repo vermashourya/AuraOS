@@ -6,6 +6,7 @@ import pythoncom
 from greeting import get_greeting
 from activity_tracker import get_power_status , get_network_status , get_hardware_status , get_audio_status , get_security_status , get_running_apps
 from productivity_engine import get_productivity_report
+from prediction_engine import get_predictions
 
 app = FastAPI()
 
@@ -62,3 +63,9 @@ def greet():
 @app.get('/productivity')
 def report():
     return get_productivity_report()
+
+# This will send prediction report to the dashboard
+@app.get('/predictions')
+def prediction():
+    pythoncom.CoInitialize()
+    return get_predictions()

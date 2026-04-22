@@ -61,6 +61,7 @@ function App(){
   const[battery, setBattery] = useState(null)
   const[time , setTime] = useState(new Date())
   const[productivity, setProductivity] = useState(null)
+  const[prediction, setPrediction] = useState(null)
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/greeting').then(response => setGreeting(response.data.message)) 
@@ -91,6 +92,8 @@ function App(){
         setApps(r3.data.apps);
         const r4 = await axios.get('http://127.0.0.1:8000/productivity');
         setProductivity(r4.data);
+        const r5 = await axios.get('http://127.0.0.1:8000/predictions');
+        setPrediction(r5.data)
       }
       catch (error){
         console.error('Error Fetching data:', error);
@@ -179,13 +182,23 @@ function App(){
                 </NavCard>
               </div>
             </div>
-            <div>
-              <NavCard title={'Productivity Report'} isDark={isDark}>
-                <Home label={'Total Sessions'} value={productivity?.['total_session']} isDark={isDark}/>
-                <Home label={'Avg Duration'} value={productivity?.['avg_duration']? (productivity['avg_duration'] / 60).toFixed(1) + ' hrs' : '—'} isDark={isDark}/>
-                <Home label={'Productive Day'} value={productivity?.['most_productive_day']} isDark={isDark}/>
-                <Home label={'Peak Hours'} value={productivity?.['peak_hours']?.map(h => h[0] + ':00').join(', ')} isDark={isDark}/>
-              </NavCard>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:'16px'}}>
+              <div>
+                <NavCard title={'Productivity Report'} isDark={isDark}>
+                  <Home label={'Total Sessions'} value={productivity?.['total_session']} isDark={isDark}/>
+                  <Home label={'Avg Duration'} value={productivity?.['avg_duration']? (productivity['avg_duration'] / 60).toFixed(1) + ' hrs' : '—'} isDark={isDark}/>
+                  <Home label={'Productive Day'} value={productivity?.['most_productive_day']} isDark={isDark}/>
+                  <Home label={'Peak Hours'} value={productivity?.['peak_hours']?.map(h => h[0] + ':00').join(', ')} isDark={isDark}/>
+                </NavCard>
+              </div>
+              <div>
+                <NavCard title={'Prediction'} isDark={isDark}>
+                  <Home label={'Battery Drain'} value={prediction?.['battery_drain']} isDark={isDark}/>
+                  <Home label={'Next App'} value={prediction?.['next_app']} isDark={isDark}/>
+                  <Home label={'Session End Time'} value={String(prediction?.['session_end'])+':00'} isDark={isDark}/>
+
+                </NavCard>
+              </div>
             </div>
           </div>
         }
