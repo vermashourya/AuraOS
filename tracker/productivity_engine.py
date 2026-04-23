@@ -1,3 +1,5 @@
+# This will generate the productivity report of user for Aura OS
+
 import os
 import sqlite3
 from datetime import datetime

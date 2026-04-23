@@ -70,12 +70,12 @@ and guides you every time you log in — like JARVIS for your computer.
      - unusual app usage
      - sudden CPU/RAM spikes
 
-- ⬜ Smarter greeting
+- ✅ Smarter greeting
      - personalized based on patterns
      - weather integration
      - calendar awareness (if connected)
 
-- ⬜ Usage predictions
+- ✅ Usage predictions
      - "Based on your pattern, you'll need to charge in 2 hours"
      - "You usually open VS Code around this time"
 

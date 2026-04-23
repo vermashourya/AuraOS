@@ -193,7 +193,7 @@ function App(){
               </div>
               <div>
                 <NavCard title={'Prediction'} isDark={isDark}>
-                  <Home label={'Battery Drain'} value={prediction?.['battery_drain']} isDark={isDark}/>
+                  <Home label={'Battery Drain'} value={String(prediction?.['battery_drain'])+' %'} isDark={isDark}/>
                   <Home label={'Next App'} value={prediction?.['next_app']} isDark={isDark}/>
                   <Home label={'Session End Time'} value={String(prediction?.['session_end'])+':00'} isDark={isDark}/>
 
