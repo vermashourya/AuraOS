@@ -79,6 +79,49 @@ and guides you every time you log in — like JARVIS for your computer.
      - "Based on your pattern, you'll need to charge in 2 hours"
      - "You usually open VS Code around this time"
 
+### Phase 4 - FRIDAY Brain
+- ⬜ Gemini API integration
+     - friday_brain.py core setup
+     - system context builder
+     - personalized responses based on YOUR data
+
+- ⬜ Context engine
+     - builds complete picture of your system
+     - battery, CPU, RAM, apps, patterns
+     - FRIDAY answers based on YOUR situation
+
+- ⬜ Web research capability
+     - search the web for real-time info
+     - extract and summarize content
+     - present results in beautiful cards
+
+- ⬜ Chat interface in dashboard
+     - ask FRIDAY anything
+     - text, code, data response cards
+     - syntax highlighted code responses
+
+- ⬜ Response intelligence
+     - weather cards
+     - news cards  
+     - code cards
+     - system recommendation cards
+
+### Phase 5 - Voice
+- ⬜ Voice input (Whisper)
+     - wake word detection
+     - natural speech recognition
+
+- ⬜ Voice output
+     - FRIDAY speaks back
+     - ElevenLabs or pyttsx3
+
+### Phase 6 - Market Ready
+- ⬜ Auto startup on boot
+- ⬜ System tray icon
+- ⬜ Windows installer (.exe)
+- ⬜ Error handling and logging
+- ⬜ Works on any Windows machine
+
 ## Built by
 Shourya Verma 
 Started 4th semester 
