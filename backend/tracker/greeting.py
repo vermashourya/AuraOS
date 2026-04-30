@@ -1,10 +1,10 @@
 # This will generate greeting message for Aura OS
 
 from datetime import datetime
-from activity_tracker import get_power_status , get_network_status , get_security_status
-from pattern_engine import get_top_app_per_hour
-from productivity_engine import get_productivity_report
-from prediction_engine import get_predictions
+from tracker.activity_tracker import get_power_status , get_network_status , get_security_status
+from tracker.pattern_engine import get_top_app_per_hour
+from tracker.productivity_engine import get_productivity_report
+from tracker.prediction_engine import get_predictions
 
 # This will give the greeting according to the time
 def get_greeting_time():

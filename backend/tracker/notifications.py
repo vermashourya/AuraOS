@@ -4,8 +4,8 @@ import os
 import sqlite3
 from datetime import datetime
 from plyer import notification
-from activity_tracker import get_power_status , get_security_status , get_hardware_status , get_network_status
-from prediction_engine import predict_battery_drain
+from tracker.activity_tracker import get_power_status , get_security_status , get_hardware_status , get_network_status
+from tracker.prediction_engine import predict_battery_drain
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'aura_memory.db')

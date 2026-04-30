@@ -3,10 +3,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pythoncom
-from greeting import get_greeting
-from activity_tracker import get_power_status , get_network_status , get_hardware_status , get_audio_status , get_security_status , get_running_apps
-from productivity_engine import get_productivity_report
-from prediction_engine import get_predictions
+from tracker.greeting import get_greeting
+from tracker.activity_tracker import get_power_status , get_network_status , get_hardware_status , get_audio_status , get_security_status , get_running_apps
+from tracker.productivity_engine import get_productivity_report
+from tracker.prediction_engine import get_predictions
 
 app = FastAPI()
 

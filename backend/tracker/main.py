@@ -7,11 +7,11 @@ import time
 from datetime import datetime
 import wmi
 import pythoncom
-from greeting import get_greeting
-from notifications import run_checks
-from activity_tracker import parse_wmi_date , get_hardware_status , get_network_status , get_power_status , get_running_apps
-from aura_memory import create_database , save_sessions , save_snapshots , update_logout
-from anomaly_engine import check_login_anomaly
+from tracker.greeting import get_greeting
+from tracker.notifications import run_checks
+from tracker.activity_tracker import parse_wmi_date , get_hardware_status , get_network_status , get_power_status , get_running_apps
+from tracker.aura_memory import create_database , save_sessions , save_snapshots , update_logout
+from tracker.anomaly_engine import check_login_anomaly
 
 # This will give the network name
 def get_network_name(network):
