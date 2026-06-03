@@ -7,6 +7,9 @@ from tracker.greeting import get_greeting
 from tracker.activity_tracker import get_power_status , get_network_status , get_hardware_status , get_audio_status , get_security_status , get_running_apps
 from tracker.productivity_engine import get_productivity_report
 from tracker.prediction_engine import get_predictions
+from brain.aura_brain import ask_aura
+from brain.web_research import research_topic
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -69,3 +72,26 @@ def report():
 def prediction():
     pythoncom.CoInitialize()
     return get_predictions()
+
+class Question(BaseModel):
+    question : str
+
+@app.post('/ask')
+async def ask(request : Question):
+    pythoncom.CoInitialize()
+    response = ask_aura(request.question)
+
+    return response
+
+class Research(BaseModel):
+    query : str
+
+@app.post('/reseach')
+async def research(request : Research):
+    pythoncom.CoInitialize()
+    result = research_topic(request.query)
+
+    return{
+        "query" : request.query,
+        "result" : result
+    }
