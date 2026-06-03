@@ -1,6 +1,10 @@
 # MAIN Aura-OS
 # This is the heart of Aura-OS - brings everything alive
 
+import sys
+import os 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import time
 import threading
 import time

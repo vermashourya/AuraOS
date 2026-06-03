@@ -50,17 +50,19 @@ def get_network_status():
             network['Ethernet'] = {'status':stat.isup , 'speed':stat.speed}
         elif 'Ethernet' in iface:
             network['Ethernet'] = {'status':stat.isup , 'speed':stat.speed}
-    
-    result = subprocess.check_output(['netsh','wlan','show','interfaces'] , text = True)
-    for line in result.split("\n"):
-        if 'SSID' in line and not 'BSSID' in line:
-            network.setdefault('Wi-Fi' , {}).update({'name':line.split(":")[1].strip()})
-        if 'State' in line:
-            network.setdefault('Wi-Fi' , {}).update({'status':line.split(":")[1].strip()})
-        if 'Receive rate' in line:
-            network.setdefault('Wi-Fi' , {}).update({'speed':line.split(":")[1].strip() + ' Mbps'})
-        if 'Signal' in line:            
-            network.setdefault('Wi-Fi' , {}).update({'signal':line.split(":")[1].strip()})
+    try:
+        result = subprocess.check_output(['netsh','wlan','show','interfaces'] , text = True)
+        for line in result.split("\n"):
+            if 'SSID' in line and not 'BSSID' in line:
+                network.setdefault('Wi-Fi' , {}).update({'name':line.split(":")[1].strip()})
+            if 'State' in line:
+                network.setdefault('Wi-Fi' , {}).update({'status':line.split(":")[1].strip()})
+            if 'Receive rate' in line:
+                network.setdefault('Wi-Fi' , {}).update({'speed':line.split(":")[1].strip() + ' Mbps'})
+            if 'Signal' in line:            
+                network.setdefault('Wi-Fi' , {}).update({'signal':line.split(":")[1].strip()})
+    except subprocess.CalledProcessError:
+        network['Wi-Fi'] = {'status':'disconnected', 'name':None, 'speed':'0 Mbps', 'signal':'0 %'}
     
     return network   
 

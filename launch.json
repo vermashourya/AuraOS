@@ -1,0 +1,13 @@
+{
+    "version":"0.2.0",
+    "configuration":[
+        {
+            "name": "Run AuraOS",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/tracker/main.py",
+            "cwd": "${workspaceFolder}/backend",
+            "console": "integratedTerminal"
+        }
+    ]
+}
