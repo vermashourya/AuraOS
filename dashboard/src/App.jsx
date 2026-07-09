@@ -62,6 +62,51 @@ function App(){
   const[time , setTime] = useState(new Date())
   const[productivity, setProductivity] = useState(null)
   const[prediction, setPrediction] = useState(null)
+  const[messages, setMessages] = useState([])
+  const[input, setInput] = useState("")
+  const[loading, setLoading] = useState(false)
+  
+  const sendMessage = async () => {
+    const question = input.trim();
+    if(!question) return ;
+    
+    setMessages(prev => [...prev,
+      {
+        role : "user",
+        content : question
+      }
+    ]);
+    setLoading(true);
+    setInput("");
+    
+    try{
+      const response = await
+      fetch("http://127.0.0.1:8000/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          question: question
+        })
+      });
+      const data = await response.json();
+      setMessages(prev => [
+        ...prev, 
+        {
+          role: "aura os",
+          content: data
+        }
+      ] );
+    }
+    catch(error){
+      console.error(error);
+    }
+    finally{
+      setLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/greeting').then(response => setGreeting(response.data.message)) 
@@ -147,6 +192,7 @@ function App(){
           <NavButton name='Security' activeTab={activeTab} setActiveTab={setActiveTab} isDark={isDark} />
           <NavButton name='Apps' activeTab={activeTab} setActiveTab={setActiveTab} isDark={isDark} />
           <NavButton name='Audio' activeTab={activeTab} setActiveTab={setActiveTab} isDark={isDark} />
+          <NavButton name='Aura OS' activeTab={activeTab} setActiveTab={setActiveTab} isDark={isDark} />
         </nav>
       </div>
 
@@ -262,6 +308,43 @@ function App(){
             <NavCardInfoRow label={"Audio playing by"} value={audio?.['Audio by']?.join(', ') || 'Nothing Playing'} isDark={isDark}/>
           </NavCard>
         }
+        {activeTab === "Aura OS" && (
+          <div style={{height: "48vh", display: "flex", flexDirection: "column"}}>
+            <div style={{flex: 1, overflowY: "auto", padding: "16px"}}>
+              {messages.map((msg, index) => (
+                <div key={index} style={{marginBottom: "12px", display: "flex", justifyContent:msg.role === "user" ? "flex-end" : "flex-start"}}>
+                  <div style={{padding: "8px 16px", borderRadius: "8px", maxWidth: "70%", backgroundColor:msg.role === "user" ? "#3b82f6" : "#22c55e", color: "#ffffff", wordBreak: "break-word"}}>
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
+
+              {loading && (
+                <div style={{display: "flex", justifyContent: "flex-start", marginBottom: "12px"}}>
+                  <div style={{backgroundColor: "#22c55e", color: "#ffffff", padding: "8px 16px", borderRadius: "8px"}}>
+                    Thinking...
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <div
+              style={{borderTop: "1px solid #e5e7eb", padding: "16px", display: "flex", gap: "8px"}}>
+              <input type="text" value={input} onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    sendMessage();
+                  }
+                }}
+                placeholder="Ask Aura..."
+                style={{flex: 1, border: "1px solid #d1d5db", borderRadius: "8px", padding: "8px 16px", outline: "none", fontSize: "16px"}}/>
+
+              <button onClick={sendMessage} style={{backgroundColor: "#3b82f6", color: "#ffffff", padding: "8px 16px", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "16px"}}>
+                Send
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       
     </div>
