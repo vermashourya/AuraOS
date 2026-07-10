@@ -26,16 +26,29 @@ def build_system_prompt():
     Current time is {time} all currently running apps are{running_apps} and greeting message is {greeting}'''
 
 def ask_aura(question):
-    context = build_system_prompt()    
+    try: 
+        context = build_system_prompt() 
+    except Exception:
+        context = "System context not available"
 
-    need_web_search = needs_web_search(question)
+    try:   
+        need_web_search = needs_web_search(question)
+    except Exception:
+        need_web_search = False
 
     if need_web_search:
-        context = build_full_context()
+        try:
+            context = build_full_context()
+        except Exception:
+            pass
 
     prompt = f'''Your name is Aura and you are an AI assistant.
     Here is the current system state :{context},
     User question :{question},
     Answer helpfully and personally.'''
 
-    return get_gemini_response(prompt).text
+    try:
+        response = get_gemini_response(prompt)
+        return response.text or "Response couldn't be generated"
+    except Exception as e:
+        return f"Error: {str(e)}"
