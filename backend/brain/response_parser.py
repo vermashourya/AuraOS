@@ -1,6 +1,5 @@
 import json
 import re
-from brain.aura_brain import get_gemini_response
 
 def detect_response_type(response):
     text = response.text.strip()

@@ -54,4 +54,4 @@ def ask_aura(question):
         formatted = parse_aura_response(response)
         return {'type': response_type, 'content': formatted}
     except Exception as e :
-        return {'type': 'text', 'content': f'Error: {str(e)}'}
+        return {'type': 'text', 'content': 'Unavailable right now'}

@@ -10,6 +10,8 @@ from tracker.prediction_engine import get_predictions
 from brain.aura_brain import ask_aura
 from brain.web_research import research_topic
 from pydantic import BaseModel
+import json
+from pathlib import Path
 
 app = FastAPI()
 
@@ -86,7 +88,7 @@ async def ask(request : Question):
 class Research(BaseModel):
     query : str
 
-@app.post('/reseach')
+@app.post('/research')
 async def research(request : Research):
     pythoncom.CoInitialize()
     result = research_topic(request.query)
@@ -95,3 +97,22 @@ async def research(request : Research):
         "query" : request.query,
         "result" : result
     }
+
+# Chat History
+HISTORY_FILE = Path(__file__).parent / 'conversations.json'
+
+class Messages(BaseModel):
+    messages: list
+
+@app.get('/history')
+def get_history():
+    if not HISTORY_FILE.exists():
+        return {'messages': []}
+    with open (HISTORY_FILE, 'r') as f :
+        return json.load(f)
+    
+@app.post('/history/save')
+def save_history(request : Messages):
+    with open (HISTORY_FILE, 'w') as f :
+        json.dump({'messages': request.messages}, f)
+    return {'status': 'saved'}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef} from 'react'
 import axios from 'axios'
 import ReactMarkdown from 'react-markdown'
 
@@ -150,6 +150,7 @@ function HomeRow({ label, value, isDark, valueColor, bar }) {
 }
 
 function MessageContent({msg, c}) {
+  if (!msg.content || typeof msg.content !== 'string') return null
   if (msg.role === 'user'){return <span>{msg.content}</span>}
   if (msg.type === 'weather'){return (
     <div>
@@ -212,6 +213,11 @@ function App() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [auraName, setAuraName] = useState(() => localStorage.getItem('auraName') || '')
+  const [showNamePrompt, setShowNamePrompt] = useState(() => !localStorage.getItem('auraName'))
+  const [nameInput, setNameInput] = useState('')
+
+  const chatEndRef = useRef(null)
 
   const c = isDark ? DARK : LIGHT
 
@@ -230,24 +236,31 @@ function App() {
         body: JSON.stringify({ question }),
       })
       const data = await response.json()
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'aura os',
-          content: data.content,
-          type: data.type,
-        },
-      ])
+      setMessages(prev => {
+        const updated = [...prev, { role: 'aura os', content: data.content, type: data.type }]
+        axios.post('http://127.0.0.1:8000/history/save', { messages: updated })
+        return updated
+      })
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
     }
   }
+  
+  const handleNameSubmit = () => {
+    const name = nameInput.trim() || 'Aura OS'
+    localStorage.setItem('auraName', name)
+    setAuraName(name)
+    setShowNamePrompt(false)
+  }
 
   // ─── Data Fetching ───────────────────────────────────────────────────────────
 
   useEffect(() => {
+    axios.get('http://127.0.0.1:8000/history')
+      .then(res => {if (res.data.messages?.length) setMessages(res.data.messages)})
+
     axios.get('http://127.0.0.1:8000/greeting')
       .then(response => setGreeting(response.data.message))
 
@@ -305,6 +318,10 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth'})
+  }, [messages, loading])
+
   // ─── Render ──────────────────────────────────────────────────────────────────
 
   return (
@@ -319,6 +336,22 @@ function App() {
         '--accent': c.accent,
       }}
     >
+      {showNamePrompt && (
+        <div style={{
+          position: 'fixed', 
+          inset: 0,
+          background: 'rgba(0,0,0,0.85)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999,
+        }}>
+          <div>
+            
+          </div>
+
+        </div>
+      )}
 
       {/* Header */}
       <div
@@ -723,6 +756,7 @@ function App() {
                   </div>
                 </div>
               )}
+              <div ref={chatEndRef} />
             </div>
 
             {/* Input */}
