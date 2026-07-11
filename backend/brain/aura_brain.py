@@ -9,6 +9,7 @@ from tracker.greeting import get_greeting
 from brain.web_research import needs_web_search
 from brain.context_engine import build_full_context
 from brain.gemini_client import get_gemini_response
+from brain.response_parser import parse_aura_response, detect_response_type
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -49,6 +50,8 @@ def ask_aura(question):
 
     try:
         response = get_gemini_response(prompt)
-        return response.text or "Response couldn't be generated"
-    except Exception as e:
-        return f"Error: {str(e)}"
+        response_type = detect_response_type(response)
+        formatted = parse_aura_response(response)
+        return {'type': response_type, 'content': formatted}
+    except Exception as e :
+        return {'type': 'text', 'content': f'Error: {str(e)}'}

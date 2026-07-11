@@ -149,6 +149,52 @@ function HomeRow({ label, value, isDark, valueColor, bar }) {
   )
 }
 
+function MessageContent({msg, c}) {
+  if (msg.role === 'user'){return <span>{msg.content}</span>}
+  if (msg.type === 'weather'){return (
+    <div>
+      <p style={{
+        color: c.accent,
+        fontSize: '11px',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        marginBottom: '8px',
+      }}>
+        ⛅ Weather
+      </p>
+      <ReactMarkdown> {msg.content} </ReactMarkdown>
+    </div>
+  )}
+  if (msg.type === 'code'){return (
+    <div>
+      <p style={{
+        color: c.accent,
+        fontSize: '11px',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        marginBottom: '8px',
+      }}>
+        {'</>'} Code
+      </p>
+      <ReactMarkdown> {msg.content} </ReactMarkdown>
+    </div>
+  )}
+  if (msg.type === 'data'){return (
+    <div>
+      <p style={{
+        color: c.accent,
+        fontSize: '11px',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        marginBottom: '8px',
+      }}>
+        📊 Data
+      </p>
+      <ReactMarkdown> {msg.content} </ReactMarkdown>
+    </div>
+  )}
+  return <ReactMarkdown> {msg.content} </ReactMarkdown>
+}
 
 function App() {
   const [isDark, setIsDark] = useState(true)
@@ -188,7 +234,8 @@ function App() {
         ...prev,
         {
           role: 'aura os',
-          content: typeof data === 'string' ? data : JSON.stringify(data),
+          content: data.content,
+          type: data.type,
         },
       ])
     } catch (error) {
@@ -656,7 +703,7 @@ function App() {
                       border: msg.role === 'user' ? 'none' : `1px solid ${c.border}`,
                     }}
                   >
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    <MessageContent msg={msg} c={c} />
                   </div>
                 </div>
               ))}
