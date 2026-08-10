@@ -42,42 +42,22 @@ def extract_content(url):
         return f"Error: {e}"
 
 def research_topic(query):
-    search = search_web(query)
-    extracted_data = [] 
+    results = search_web(query)
+    return [
+        {
+            'title' : r['title'],
+            'url': r['url'],
+            'snippet': r['snippet'],
+            'content': r['snippet']
+        }
+        for r in results
+    ]
 
-    for result in search[:2]:
-        content = extract_content(result['url'])
-
-        extracted_data.append({
-            'title' : result['title'],
-            'url' : result['url'],
-            'snippet' : result['snippet'],
-            'content' : content[:3000]
-        })
-    
-    return extracted_data
+LIVE_KEYWORDS = [
+    "weather", "temperature", "forecast", "news", "latest", "current",
+    "today", "stock", "price", "score", "live", "who won",
+    "what happened", "right now", "trending", "update", "recently"
+]
 
 def needs_web_search(question):
-    prompt = f"""
-Determine if this query requires live internet search.
-Return ONLY:
-TRUE or FALSE
-Use TRUE for:
-- latest/current/recent/live information
-- news
-- weather
-- stock prices
-- sports scores
-- changing information
-Use FALSE for:
-- programming
-- math
-- explanations
-- theory
-- stable knowledge
-Query: {question} """
-    
-    response = get_gemini_response(prompt).text
-    decision = response.strip().upper()
-
-    return decision == "TRUE"    
+    return any(word in question.lower() for word in LIVE_KEYWORDS)  

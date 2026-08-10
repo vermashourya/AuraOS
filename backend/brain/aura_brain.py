@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from datetime import datetime
 from tracker.activity_tracker import get_running_apps, get_power_status, get_audio_status, get_hardware_status, get_network_status, get_security_status
 from tracker.greeting import get_greeting
-from brain.web_research import needs_web_search
+from brain.web_research import needs_web_search, research_topic
 from brain.context_engine import build_full_context
 from brain.gemini_client import get_gemini_response
 from brain.response_parser import parse_aura_response, detect_response_type
@@ -38,17 +38,22 @@ def ask_aura(question):
     except Exception:
         need_web_search = False
 
+    web_context = ""
     if need_web_search:
         try:
-            context = build_full_context()
+            results = research_topic(question)
+            web_context = "\n\n".join(
+                f"Source: {r['title']}\n{r['snippet']}\n{r['content'][:1000]}"
+                for r in results
+            )
         except Exception as e:
             logging.warning("build_full_context falied : %s", e)
 
-    prompt = f'''Your name is Aura and you are an AI assistant.
-    Here is the current system state :{context},
-    User question :{question},
-    Answer helpfully, concisely and personally.
-    Do NOT introdue yourself or say your name until user expilcitly asks who you are'''
+    prompt = f'''You are Aura, an AI assistant embedded in AuraOS.
+    System state: {context}
+    {"Web research results (use this as your primary source): " + web_context if web_context else ""}
+    User question: {question}
+    Answer helpfully and concisely based on the web results if available. Do NOT introduce yourself unless explicitly asked.'''
 
     try:
         response = get_gemini_response(prompt)
@@ -56,4 +61,5 @@ def ask_aura(question):
         formatted = parse_aura_response(response)
         return {'type': response_type, 'content': formatted}
     except Exception as e :
+        logging.error("ask_aura failed: %s", e)
         return {'type': 'text', 'content': 'Unavailable right now'}

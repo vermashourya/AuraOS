@@ -51,7 +51,7 @@ def format_response(response, response_type):
     text = response.text.strip()
 
     if response_type == "weather":
-        return f"🌤 WEATHER REPORT\n\n{html.escape(text)}"
+        return f"🌤 WEATHER REPORT\n\n{(text)}"
 
     return text
     
