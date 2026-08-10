@@ -149,52 +149,31 @@ function HomeRow({ label, value, isDark, valueColor, bar }) {
   )
 }
 
-function MessageContent({msg, c}) {
+function MessageContent({ msg, c }) {
   if (!msg.content || typeof msg.content !== 'string') return null
-  if (msg.role === 'user'){return <span>{msg.content}</span>}
-  if (msg.type === 'weather'){return (
+  if (msg.role === 'user') return <span>{msg.content}</span>
+
+  const label = msg.type === 'weather' ? '⛅ Weather'
+    : msg.type === 'code' ? '</> Code'
+    : msg.type === 'data' ? '📊 Data'
+    : null
+
+  return (
     <div>
-      <p style={{
-        color: c.accent,
-        fontSize: '11px',
-        letterSpacing: '2px',
-        textTransform: 'uppercase',
-        marginBottom: '8px',
-      }}>
-        ⛅ Weather
-      </p>
-      <ReactMarkdown> {msg.content} </ReactMarkdown>
+      {label && (
+        <p style={{
+          color: c.accent,
+          fontSize: '11px',
+          letterSpacing: '2px',
+          textTransform: 'uppercase',
+          marginBottom: '8px',
+        }}>
+          {label}
+        </p>
+      )}
+      <ReactMarkdown>{msg.content}</ReactMarkdown>
     </div>
-  )}
-  if (msg.type === 'code'){return (
-    <div>
-      <p style={{
-        color: c.accent,
-        fontSize: '11px',
-        letterSpacing: '2px',
-        textTransform: 'uppercase',
-        marginBottom: '8px',
-      }}>
-        {'</>'} Code
-      </p>
-      <ReactMarkdown> {msg.content} </ReactMarkdown>
-    </div>
-  )}
-  if (msg.type === 'data'){return (
-    <div>
-      <p style={{
-        color: c.accent,
-        fontSize: '11px',
-        letterSpacing: '2px',
-        textTransform: 'uppercase',
-        marginBottom: '8px',
-      }}>
-        📊 Data
-      </p>
-      <ReactMarkdown> {msg.content} </ReactMarkdown>
-    </div>
-  )}
-  return <ReactMarkdown> {msg.content} </ReactMarkdown>
+  )
 }
 
 function App() {
@@ -346,8 +325,71 @@ function App() {
           justifyContent: 'center',
           zIndex: 999,
         }}>
-          <div>
-            
+          <div style={{
+            background: c.card,
+            border: `1px solid ${c.border}`,
+            borderRadius: '16px',
+            padding: '40px',
+            width: '360px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            textAlign: 'center',
+          }}>
+            <p style={{
+              color: c.accent,
+              fontSize: '11px',
+              letterSpacing: '2px', 
+              textTransform: 'uppercase',
+            }}>
+              Welcome
+            </p>
+            <h2 style={{
+              color: c.text,
+              fontSize: '22px',
+              fontWeight: '700',
+              margin: '0'
+            }}>
+              What should I call you?
+            </h2>
+            <p style={{
+              color: c.label,
+              fontSize: '13px',
+              margin: '0',
+            }}>
+              I'll use this to personalize your experience.
+            </p>
+            <input type="text" 
+            value={nameInput} 
+            onChange={e => setNameInput(e.target.value)} 
+            onKeyDown={e => {if (e.key === 'Enter') handleNameSubmit()}} 
+            placeholder='Your Name...' 
+            autoFocus
+            style={{
+              background: c.bg,
+              border: `1px solid ${c.border}`,
+              borderRadius: '8px',
+              padding: '10px 14px',
+              fontSize: '14px',
+              color: c.accent,
+              outline: 'none',
+              fontFamily: "'Space Grotesk', sans-serif",
+              textAlign: 'center',
+            }}/>
+            <button onClick={handleNameSubmit}
+            style={{
+              backgroundColor: c.accent,
+              color: c.bg,
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}>
+              Let's go -{'>'}
+            </button>
           </div>
 
         </div>
@@ -371,10 +413,10 @@ function App() {
               borderRadius: '50%',
               backgroundColor: c.accent,
               marginRight: '12px',
-            }} /> Aura OS
+            }} /> {auraName ? `${auraName}'s` : 'Aura'} — AI Assistant
           </h1>
           <p style={{ color: c.label, fontSize: '14px' }}>
-            Intelligent desktop companion
+            Aura OS Intelligent desktop companion
           </p>
         </div>
 
@@ -556,7 +598,7 @@ function App() {
             <NavCardInfoRow label="Disk Total" value={system?.['Disk']?.Total} isDark={isDark} />
             <NavCardInfoRow label="GPU Name" value={system?.['GPU']?.[0]?.Name} isDark={isDark} />
             <NavCardInfoRow label="GPU VRAM" value={system?.['GPU']?.[0]?.VRAM} isDark={isDark} />
-            <NavCardInfoRow label="Battery" value={battery?.['Percent']} isDark={isDark} />
+            <NavCardInfoRow label="Battery" value={battery?.['Percent'] + ' %'} isDark={isDark} />
             <ProgressBar
               value={battery?.Percent}
               color={battery?.Percent > 50 ? '#4ade80' : battery?.Percent > 20 ? '#fb923c' : '#ef4444'}
@@ -686,7 +728,7 @@ function App() {
                   margin: 0,
                 }}
               >
-                Aura — AI Assistant
+                {auraName ? `${auraName}'s - Assistant` : 'Aura - AI Assistant'}
               </p>
             </div>
 

@@ -18,8 +18,6 @@ def get_greeting_time():
     else:
         return 'Good Night!'
 
-report = get_productivity_report()
-prediction = get_predictions()
 
 # This will give the perfect greeting message
 def get_greeting():
@@ -29,6 +27,8 @@ def get_greeting():
     top_app  = get_top_app_per_hour()
     security = get_security_status()
     current_hour = datetime.now().hour
+    report = get_productivity_report()
+    prediction = get_predictions()
 
     battery_info = str(power['Percent']) + ' %'
     if power['Plugged in']:

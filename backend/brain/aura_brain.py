@@ -10,6 +10,7 @@ from brain.web_research import needs_web_search
 from brain.context_engine import build_full_context
 from brain.gemini_client import get_gemini_response
 from brain.response_parser import parse_aura_response, detect_response_type
+import logging
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -40,13 +41,14 @@ def ask_aura(question):
     if need_web_search:
         try:
             context = build_full_context()
-        except Exception:
-            pass
+        except Exception as e:
+            logging.warning("build_full_context falied : %s", e)
 
     prompt = f'''Your name is Aura and you are an AI assistant.
     Here is the current system state :{context},
     User question :{question},
-    Answer helpfully and personally.'''
+    Answer helpfully, concisely and personally.
+    Do NOT introdue yourself or say your name until user expilcitly asks who you are'''
 
     try:
         response = get_gemini_response(prompt)

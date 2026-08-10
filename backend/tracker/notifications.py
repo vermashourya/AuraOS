@@ -67,6 +67,9 @@ def check_battery_drain():
             total_drain += (prev_battery - curr_battery)
             total_time += (t2 -t1).total_seconds()
     
+    if total_time == 0 :
+        return 
+    
     actual_drain = round((total_drain / (total_time / 3600)), 2)
     predict_drain = predict_battery_drain()
     

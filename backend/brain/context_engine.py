@@ -7,17 +7,18 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '..', 'tracker', 'aura_memory.db')
 
 # This will collect current system snapshots from database
+ALLOWED_FIELDS = {'battery', 'cpu_usage', 'ram_usage', 'wifi_signal', 'active_apps', 'time_stamp'}
+
 def get_system_context():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
     fields = ['battery', 'cpu_usage', 'ram_usage', 'wifi_signal', 'active_apps', 'time_stamp']
 
-    data = {
-        col : cursor.execute(f"SELECT {col} FROM snapshots").fetchall()
-        for col in fields
-    }
-
-    conn.close()
+    with sqlite3.connect(DB_PATH) as conn:
+        with conn.curosr() as cursor:
+            data ={
+                col: cursor.execute(f"SELECT {col} FROM snapshots").fetchall()
+                for col in fields
+                if col in ALLOWED_FIELDS
+            }
 
     return f'''battery levels : {data['battery']},
     cpu_usage track : {data['cpu_usage']},

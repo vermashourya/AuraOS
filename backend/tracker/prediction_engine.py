@@ -12,7 +12,7 @@ DB_PATH = os.path.join(BASE_DIR, 'aura_memory.db')
 def predict_battery_drain():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    snapshot = conn.execute('''SELECT battery, time_stamp FROM snapshots''').fetchall()
+    snapshot = cursor.execute('''SELECT battery, time_stamp FROM snapshots''').fetchall()
     conn.close()
 
     total_drain = 0 
@@ -25,6 +25,9 @@ def predict_battery_drain():
         if curr_battery < prev_battery:
             total_drain += (prev_battery - curr_battery)
             total_time += (t2 - t1).total_seconds() 
+    
+    if total_time == 0 :
+        return 0
     
     avg_drain = total_drain / (total_time / 3600)
 
@@ -61,6 +64,9 @@ def predict_session_end():
         time_str = time[0]
         hour = datetime.strptime(time_str, "%a %b %d %H:%M:%S %Y").hour
         logout.append(hour)
+    
+    if not logout:
+        return 'Unknown'
 
     return Counter(logout).most_common(1)[0][0]
 

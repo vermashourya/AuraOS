@@ -12,7 +12,7 @@ DB_PATH = os.path.join(BASE_DIR, 'aura_memory.db')
 def get_all_sessions():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    session = conn.execute('''SELECT * FROM sessions WHERE logout_time IS NOT NULL''').fetchall()
+    session = cursor.execute('''SELECT * FROM sessions WHERE logout_time IS NOT NULL''').fetchall()
     conn.close()
     
     return session
@@ -32,6 +32,9 @@ def get_average_session_duration():
     for session in sessions:
         avg.append(get_session_duration(session[1], session[4]))
 
+    if not avg:
+        return 0
+
     return round((sum(avg) / len(avg)), 2)
 
 # This will give the most productive day
@@ -45,6 +48,9 @@ def get_most_productive_day():
         days_total[day] += duration
     
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+    if not days_total:
+        return 'No data Yet'
     
     return days[days_total.most_common(1)[0][0]]
 
