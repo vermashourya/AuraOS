@@ -95,12 +95,12 @@ and guides you every time you log in — like JARVIS for your computer.
      - extract and summarize content
      - present results in beautiful cards
 
-- ⬜ Chat interface in dashboard
+- ✅ Chat interface in dashboard
      - ask FRIDAY anything
      - text, code, data response cards
      - syntax highlighted code responses
 
-- ⬜ Response intelligence
+- ✅ Response intelligence
      - weather cards
      - news cards  
      - code cards
