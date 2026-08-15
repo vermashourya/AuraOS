@@ -1,6 +1,6 @@
 # This will act as a bridge between python and react
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import pythoncom
 from tracker.greeting import get_greeting
@@ -12,6 +12,8 @@ from brain.web_research import research_topic
 from pydantic import BaseModel
 import json
 from pathlib import Path
+from voice.voice_engine import transcribe, speak, stop_speaking
+import threading
 
 app = FastAPI()
 
@@ -116,3 +118,20 @@ def save_history(request : Messages):
     with open (HISTORY_FILE, 'w') as f :
         json.dump({'messages': request.messages}, f)
     return {'status': 'saved'}
+
+# Voice
+@app.post('/voice/input')
+async def voice_input(audio: UploadFile = File(...)):
+    audio_bytes = await audio.read()
+    transcript = transcribe(audio_bytes)
+    return {'transcript': transcript}
+
+@app.post('/voice/speak')
+async def voice_speak(request: Question):
+    threading.Thread(target=speak, args=(request.question,), daemon=True).start()
+    return {'status':'speaking'}
+
+@app.post('/voice/stop')
+def voice_stop():
+    stop_speaking()
+    return {'status': 'stopped'}

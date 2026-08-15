@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef, useImperativeHandle} from 'react'
 import axios from 'axios'
 import ReactMarkdown from 'react-markdown'
 
@@ -195,8 +195,15 @@ function App() {
   const [auraName, setAuraName] = useState(() => localStorage.getItem('auraName') || '')
   const [showNamePrompt, setShowNamePrompt] = useState(() => !localStorage.getItem('auraName'))
   const [nameInput, setNameInput] = useState('')
+  const [isRecording, setIsRecording] = useState(false)
+  const [transcribing, setTranscribing] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
 
   const chatEndRef = useRef(null)
+  const speakTimerRef = useRef(null)
 
   const c = isDark ? DARK : LIGHT
 
@@ -215,11 +222,20 @@ function App() {
         body: JSON.stringify({ question }),
       })
       const data = await response.json()
+      const newMsg = {role: 'aura os', content: data.content, type: data.type}
       setMessages(prev => {
-        const updated = [...prev, { role: 'aura os', content: data.content, type: data.type }]
+        const updated = [...prev, newMsg]
         axios.post('http://127.0.0.1:8000/history/save', { messages: updated })
         return updated
       })
+      const speakResponse = (text) => {
+        setIsSpeaking(true)
+        axios.post('http://127.0.0.1:8000/voice/speak', {question: data.content})
+        const words = text.split(' ').length
+        const ms = Math.max(3000, (words/130)*60*1000)
+        speakTimerRef = setTimeout(() => setIsSpeaking(false), ms)
+      }
+      speakResponse(data.content)
     } catch (error) {
       console.error(error)
     } finally {
@@ -232,6 +248,70 @@ function App() {
     localStorage.setItem('auraName', name)
     setAuraName(name)
     setShowNamePrompt(false)
+  }
+
+  const sendMessageWithText = async (question) => {
+    if(!question) return
+    setMessages(prev => [...prev, {role: 'user', content: question}])
+    setLoading(true)
+    setInput('')
+    try{
+      const response = await fetch('http://127.0.0.1:8000/ask', {
+        method:'POST',
+        headers:{'Content-Type': 'application/json'},
+        body: JSON.stringify({question}),
+      })
+      const data = await response.json()
+      const newMsg = {role: 'aura os', content: data.content, type: data.type}
+      setMessages(prev => {
+        const updated = [...prev, newMsg]
+        axios.post('http://127.0.0.1:8000/history/save', {messages: updated})
+        return updated
+      })
+      const speakResponse = (text) => {
+        setIsSpeaking(true)
+        axios.post('http://127.0.0.1:8000/voice/speak', {question: data.content})
+        const words = text.split(' ').length
+        const ms = Math.max(3000, (words/130)*60*1000)
+        speakTimerRef = setTimeout(() => setIsSpeaking(false), ms)
+      }
+      speakResponse(data.content)
+    }catch(error){
+      console.error(error)
+    }finally{
+      setLoading(false)
+    }
+  }
+
+  const startRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true})
+    mediaRecorderRef.current = new MediaRecorder(stream)
+    audioChunksRef.current = []
+    mediaRecorderRef.current.ondataavailable = e => audioChunksRef.current.push(e.data)
+    mediaRecorderRef.current.start()
+    setIsRecording(true)
+  }
+
+  const stopRecording = async () => {
+    mediaRecorderRef.current.stop()
+    setIsRecording(false)
+    mediaRecorderRef.current.onstop = async () => {
+      setTranscribing(true)
+      try{
+        const blob = new Blob(audioChunksRef.current, {type: 'audio/wav'})
+        const formData = new FormData()
+        formData.append('audio', blob, 'recording.wav')
+        const res = await axios.post('http://127.0.0.1:8000/voice/input', formData)
+        const transcript = res.data.transcript
+        if (transcript){
+          setInput(transcript)
+          sendMessageWithText(transcript)
+        }
+      }
+      finally{
+        setTranscribing(false)
+      }
+    }
   }
 
   // ─── Data Fetching ───────────────────────────────────────────────────────────
@@ -844,6 +924,44 @@ function App() {
               >
                 Send
               </button>
+              <button
+                onMouseDown={startRecording}
+                onMouseUp={stopRecording}
+                style={{
+                  backgroundColor: isRecording ? '#ef4444' : transcribing ? '#fb923c' : c.muted,
+                  color: c.accent,
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                }}
+              >
+                {transcribing ? '⏳' : '🎙️'}
+              </button>
+              {
+                isSpeaking && (
+                  <button
+                    onClick={() => {
+                      axios.post('http://127.0.0.1:8000/voice/stop')
+                      clearTimeout(speakTimerRef.current)
+                      setIsSpeaking(false)
+                    }}
+                    style={{
+                      backgroundColor: '#ef4444',
+                      color: '#fff',
+                      padding: '8px 14px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '600'
+                    }}
+                  >
+                    ⏹ Stop
+                  </button>
+                )
+              }
             </div>
           </div>
         )}
