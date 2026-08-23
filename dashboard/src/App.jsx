@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useImperativeHandle} from 'react'
+import { useState, useEffect, useRef} from 'react'
 import axios from 'axios'
 import ReactMarkdown from 'react-markdown'
 
@@ -172,6 +172,58 @@ function MessageContent({ msg, c }) {
         </p>
       )}
       <ReactMarkdown>{msg.content}</ReactMarkdown>
+    </div>
+  )
+}
+
+function TitleBar({isDark}){
+  const c = isDark ? DARK : LIGHT
+  return(
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '8px 16px',
+      background: c.bg,
+      WebkitAppRegion : 'drag',
+      borderBottom: `1px solid ${c.border}`
+    }}>
+      <span style={{
+        fontFamily: 'Space Grotesk', 
+        fontSize: '13px',
+        color: c.label
+      }}>
+        AURA OS
+      </span>
+      <div style={{
+        display:'flex',
+        gap: '8px',
+        WebkitAppRegion: 'no-drag'
+      }}>
+        {[
+          {label: '_', action: 'minimize', hover: '#333'},
+          { label: '⤢', action: 'maximize', hover: '#333' },
+          { label: '✕', action: 'close',    hover: '#c0392b' },
+        ].map(btn => (
+          <button key={btn.action}
+          onClick={() => window.electron?.[btn.action]()}
+          style={{
+            background: 'none', 
+            border: 'none',
+            color: isDark ? '#ffffff' : '#1c1917',
+            cursor: 'pointer',
+            width: '28px',
+            height: '28px',
+            borderRadius: '4px',
+            fontSize: '14px'
+          }}
+          onMouseEnter={e => e.target.style.background = btn.hover}
+          onMouseLeave={e => e.target.style.background = 'none'}
+          >
+            {btn.label}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -390,6 +442,7 @@ function App() {
         '--accent': c.accent,
       }}
     >
+      <TitleBar isDark={isDark}/>
       {showNamePrompt && (
         <div style={{
           position: 'fixed', 

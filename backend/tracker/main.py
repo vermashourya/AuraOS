@@ -16,6 +16,7 @@ from tracker.notifications import run_checks
 from tracker.activity_tracker import parse_wmi_date , get_hardware_status , get_network_status , get_power_status , get_running_apps
 from tracker.aura_memory import create_database , save_sessions , save_snapshots , update_logout
 from tracker.anomaly_engine import check_login_anomaly
+from tray import start_tray_thread
 
 # This will give the network name
 def get_network_name(network):
@@ -81,6 +82,7 @@ def stop_aura(session_id):
 
 if __name__ == '__main__':
     session_id = start_aura()
+    start_tray_thread()
     try:
         while True:
             take_snapshot(session_id)

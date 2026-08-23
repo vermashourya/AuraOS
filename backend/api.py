@@ -14,6 +14,8 @@ import json
 from pathlib import Path
 from voice.voice_engine import transcribe, speak, stop_speaking
 import threading
+from startup import enable_startup, disable_startup, is_startup_enabled
+from logger import logger
 
 app = FastAPI()
 
@@ -31,6 +33,7 @@ def battery():
     try:
         return get_power_status()
     except Exception as e :
+        logger.error(f'/hardware failed: {e}')
         return {'error' : str(e)}
 
 # This will send the network info to the dashboard
@@ -113,6 +116,7 @@ async def ask(request : Question):
         pythoncom.CoInitialize()
         response = ask_aura(request.question)
     except Exception as e :
+        logger.error(f'/ask failed: {e}')
         return {'error' : str(e)}
 
     return response
@@ -132,9 +136,6 @@ async def research(request : Research):
     except Exception as e :
         return {'error' : str(e)}
 
-    
-
-# Chat History
 HISTORY_FILE = Path(__file__).parent / 'conversations.json'
 
 class Messages(BaseModel):
@@ -167,6 +168,7 @@ async def voice_input(audio: UploadFile = File(...)):
         transcript = transcribe(audio_bytes)
         return {'transcript': transcript}
     except Exception as e :
+        logger.error(f'/voice/input failed: {e}')
         return {'error' : str(e)}
 
 @app.post('/voice/speak')
@@ -184,3 +186,21 @@ def voice_stop():
         return {'status': 'stopped'}
     except Exception as e :
         return {'error' : str(e)}
+
+@app.get('/startup')
+def get_startup():
+    try:
+        return {'enabled': is_startup_enabled()}
+    except Exception as e:
+        return {'error': str(e)}
+
+@app.post('/startup')
+def set_startup(request: Question):
+    try:
+        if request.question == 'enable':
+            enable_startup()
+        else:
+            disable_startup()
+        return {'enabled': is_startup_enabled()}
+    except Exception as e:
+        return {'error': str(e)}
