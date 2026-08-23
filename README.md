@@ -107,11 +107,11 @@ and guides you every time you log in — like JARVIS for your computer.
      - system recommendation cards
 
 ### Phase 5 - Voice
-- ⬜ Voice input (Whisper)
+- ✅ Voice input (Whisper)
      - wake word detection
      - natural speech recognition
 
-- ⬜ Voice output
+- ✅ Voice output
      - FRIDAY speaks back
      - ElevenLabs or pyttsx3
 
