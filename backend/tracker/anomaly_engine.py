@@ -1,5 +1,3 @@
-# This will help Aura OS to think according to you activity
-
 import sqlite3
 import os
 from collections import Counter
@@ -9,7 +7,6 @@ from plyer import notification
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'aura_memory.db')
 
-# This will get all the login hours from database
 def get_login_hours():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -29,17 +26,16 @@ def is_unusual_login():
     total = len(hours)
 
     if total < 5:
-        return False # not enough data to judge
+        return False 
     if current_hour not in hours :
-        return True # never logged in at this hour
+        return True 
     
     percentage = (hrs_freq[current_hour] / total) * 100
     if percentage < 10 :
-        return True # very rare hour
+        return True 
     else:
-        return False # normal hour
+        return False 
 
-# This will give message according to login hours
 def get_anomaly_message():
     current_hour = str(datetime.now().strftime("%I %p"))
     hours = get_login_hours()
@@ -49,7 +45,6 @@ def get_anomaly_message():
                 Your typical login time is around {common}:00.
                 Is everything okay?"""
 
-# combines everything and send notification
 def check_login_anomaly():
     anomaly = is_unusual_login()
     if anomaly:

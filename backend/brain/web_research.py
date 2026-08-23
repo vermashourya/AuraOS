@@ -3,7 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 from brain.gemini_client import get_gemini_response
 
-# This will search from web and give results
 def search_web(query):
     with DDGS() as ddgs:
         results = ddgs.text(query, max_results=5)

@@ -1,5 +1,3 @@
-# This will act as a bridge between python and react
-
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import pythoncom
@@ -27,7 +25,7 @@ app.add_middleware(
 def home():
     return {'message':'Aura OS API is running'}
 
-# This will send the battery info to the dashboard
+
 @app.get('/battery')
 def battery():
     try:
@@ -36,7 +34,7 @@ def battery():
         logger.error(f'/hardware failed: {e}')
         return {'error' : str(e)}
 
-# This will send the network info to the dashboard
+
 @app.get('/network')
 def network():
     try:
@@ -44,7 +42,7 @@ def network():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send the hardware info to the dashboard
+
 @app.get('/hardware')
 def hardware():
     try:
@@ -53,7 +51,7 @@ def hardware():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send the audio info to the dashboard
+
 @app.get("/audio")
 def audio():
     try:
@@ -62,7 +60,7 @@ def audio():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send the security info to the dashboard
+
 @app.get("/security")
 def security():
     try:
@@ -71,7 +69,7 @@ def security():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send the running apps info to the dashboard
+
 @app.get('/apps')
 def apps():
     try:
@@ -81,7 +79,7 @@ def apps():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send the greeting message to the dashboard
+
 @app.get('/greeting')
 def greet():
     try:
@@ -90,7 +88,7 @@ def greet():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send the productivity report to the dashboard
+
 @app.get('/productivity')
 def report():
     try:
@@ -98,7 +96,7 @@ def report():
     except Exception as e :
         return {'error' : str(e)}
 
-# This will send prediction report to the dashboard
+
 @app.get('/predictions')
 def prediction():
     try:
@@ -160,7 +158,7 @@ def save_history(request : Messages):
     except Exception as e :
         return {'error' : str(e)}
 
-# Voice
+
 @app.post('/voice/input')
 async def voice_input(audio: UploadFile = File(...)):
     try:

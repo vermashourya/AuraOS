@@ -1,5 +1,3 @@
-# This will give notification to user whenever any wrong happen
-
 import os
 import sqlite3
 from datetime import datetime
@@ -10,7 +8,7 @@ from tracker.prediction_engine import predict_battery_drain
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'aura_memory.db')
 
-# This will give notification to user when battery goes low
+
 def check_battery():
     battery = get_power_status()
     if battery is not None:
@@ -19,7 +17,7 @@ def check_battery():
         elif battery['Percent'] < 20 and not battery['Plugged in']:
             notification.notify(title = 'Aura OS' , message = 'Battery Low! Plug in your charger' , timeout = 10)
 
-# This will give notification to user if defender is off
+
 def check_defender():
     security = get_security_status()
     if not security['Defender']['status']:
@@ -27,7 +25,7 @@ def check_defender():
     if not security['Defender']['protection status']:
         notification.notify(title = 'Aura OS' , message = 'Warning: Real time protection is off' , timeout = 10)
 
-# This will give notification to user if system resource hit peak
+
 def check_hardware():
     hardware = get_hardware_status()
     if hardware['CPU']['Usage'] > 90:
@@ -37,7 +35,7 @@ def check_hardware():
     if hardware['Disk']['Usage'] > 90:
         notification.notify(title = 'Aura OS' , message = 'Disk almost full' , timeout = 10)
 
-# This will give notification to user if wifi signal got weak
+
 def check_wifi():
     network = get_network_status()
     if network.get('Wi-Fi' , {}).get('status') == 'connected':
@@ -45,7 +43,7 @@ def check_wifi():
         if signal < 30:
             notification.notify(title = 'Aura OS' , message = 'Weak Wi-Fi signal' , timeout = 10)
 
-# This will check and notify if battery is draining faster than usual
+
 def check_battery_drain():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -76,7 +74,7 @@ def check_battery_drain():
     if actual_drain > predict_drain * 2:
         notification.notify(title= 'Aura OS', message= 'Unusual Battery Drain', timeout= 10)
 
-# This will check and notify sudden cpu spike
+
 def check_cpu_spike():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -99,7 +97,7 @@ def check_cpu_spike():
     if curr_CPU > avg_CPU * 2 and curr_CPU > 80:
         notification.notify(title= 'Aura OS', message= 'Unusual CPU Spike', timeout= 10)
 
-# This will invoke and check all functions
+
 def run_checks():
     check_battery()
     check_defender()

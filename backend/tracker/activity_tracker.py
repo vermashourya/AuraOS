@@ -1,6 +1,3 @@
-# ACTIVITY TRACKER of AURA-OS
-# This unit tells the AURA-OS about all the activity of the system
-
 import os
 import psutil
 import subprocess
@@ -11,13 +8,10 @@ from pycaw.pycaw import AudioUtilities , IAudioEndpointVolume
 from ctypes import cast , POINTER
 from comtypes import CLSCTX_ALL
 
-# This is the list of all the essential services of windows
 ESSENTIAL_SERVICES = ['WlanSvc','Wcmsvc','WwanSvc','Wcncsvc','bthserv','BluetoothUserService','BTAGService','BthAvctpSvc','Audiosrv','AudioEndpointBuilder','MMCSS','MpsSvc','BFE','SharedAccess','WinDefend','WdNisSvc','Sense','SecurityHealthService','wuauserv','UsoSvc','BITS','DoSvc','WaaSMedicSvc','Dhcp','Dnscache','NlaSvc','Netman','Netprofm','iphlpsvc','lmhosts','WinHttpAutoProxySvc','RasMan','RemoteAccess','FrameServer','FrameServerMonitor','Audiosrv','AudioEndpointBuilder','MMCSS','hidserv','DeviceAssociationService','PlugPlay','SharedAccess','icssvc','WlanSvc','Spooler','PrintNotify']
 
-# This will dynamically give the system drive name
 windows_drive = os.environ.get('SystemDrive' , 'C:') + '\\'
 
-# This give the list of all processes which are required by AuraOS
 def get_running_apps():
     apps = [] 
     w = wmi.WMI()
@@ -30,7 +24,6 @@ def get_running_apps():
 
     return set(apps)
 
-# This gives the list of all essential windows services which are running 
 def get_essential_services():
     services =[]
     for service in psutil.win_service_iter():
@@ -39,7 +32,6 @@ def get_essential_services():
 
     return set(services)
 
-# This gives the status of networks connected
 def get_network_status():
     network = dict({})
 
@@ -66,7 +58,6 @@ def get_network_status():
     
     return network   
 
-# This is a helper function for get_security_status() that convert the date and time from the wmi into user readable format
 def parse_wmi_date(date):
     if not isinstance(date , str):
         return 'Never'
@@ -74,7 +65,6 @@ def parse_wmi_date(date):
         clean_date = datetime.strptime(date[:14] , "%Y%m%d%H%M%S")
         return clean_date.strftime("%d %b %Y %H:%M")
     
-# This is a helper function for get_security_status() that gives the age of scans in correct format
 def parse_wmi_age(age):
     if age is None or age == 4294967295 or age == -1:
         return 'Never'
@@ -83,14 +73,12 @@ def parse_wmi_age(age):
     else:
         return str(age) + ' days ago'
 
-# This is a helper function for get_security_status() that convertes the firewall status
 def firewall_status(fire):
     if fire == 1:
         return 'On'
     else:
         return 'Off'
 
-# This gives the firewall and defender status
 def get_security_status():
     security = dict({})
     w = wmi.WMI(namespace = 'root/microsoft/windows/defender')
@@ -103,7 +91,6 @@ def get_security_status():
     
     return security
 
-# This gives the audio status 
 def get_audio_status():
     audio = dict({})
     try:
@@ -122,7 +109,6 @@ def get_audio_status():
     except:
         return {'Volume' : None , 'Mute' : None , 'Device' : 'No Audio Device'}
 
-# This gives the power status
 def get_power_status():
     power = dict({})
     battery = psutil.sensors_battery()
@@ -131,7 +117,6 @@ def get_power_status():
         return {'Percent' : None , 'Time Left' : None , 'Plugged in' : True}
     
     power['Percent'] = battery.percent 
-    # power['Time Left'] = str(round(battery.secsleft / (60 * 60 * 60))) + ' mins'
     if battery.power_plugged:
         power['Time Left'] = '~'
     elif battery.secsleft == -1 or battery.secsleft > 86400:
@@ -143,7 +128,6 @@ def get_power_status():
 
     return power
 
-# This gives the hardware status
 def get_hardware_status():
     hardware = dict({})
     hardware['CPU'] = {'Usage':psutil.cpu_percent(interval=1) , 'Cores':psutil.cpu_count()}

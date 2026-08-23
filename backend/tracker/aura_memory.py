@@ -1,13 +1,9 @@
-# Memory of AURA-OS
-# This unit stores all of the data of AURA-OS
-
 import sqlite3
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR , 'aura_memory.db')
 
-# This will create a database file 
 def create_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -30,7 +26,6 @@ def create_database():
     conn.commit()
     conn.close()
 
-# This will save the session information in database
 def save_sessions(login_time , wifi_name , battery):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -41,7 +36,6 @@ def save_sessions(login_time , wifi_name , battery):
     conn.close()
     return i 
 
-# This will save the all necessary activity information in database
 def save_snapshots(session_id , time_stamp , active_apps , battery , cpu_usage , ram_usage , wifi_signal):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -51,7 +45,6 @@ def save_snapshots(session_id , time_stamp , active_apps , battery , cpu_usage ,
     conn.commit()
     conn.close()
 
-# This will update the session and add logout-time corresponding to the login-time
 def update_logout(session_id , logout_time):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -59,7 +52,6 @@ def update_logout(session_id , logout_time):
     conn.commit()
     conn.close()
 
-# This will give all the information out of database
 def get_sessions():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()

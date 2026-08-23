@@ -361,7 +361,6 @@ function App() {
     }
   }
 
-  // ─── Data Fetching ───────────────────────────────────────────────────────────
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/history')
@@ -428,7 +427,6 @@ function App() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth'})
   }, [messages, loading])
 
-  // ─── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <div
@@ -523,7 +521,6 @@ function App() {
         </div>
       )}
 
-      {/* Header */}
       <div
         style={{
           display: 'flex',
@@ -568,7 +565,6 @@ function App() {
         </div>
       </div>
 
-      {/* Greeting */}
       <div
         style={{
           width: '100%',
@@ -584,7 +580,6 @@ function App() {
         </p>
       </div>
 
-      {/* Nav */}
       <div
         style={{
           display: 'flex',
@@ -607,10 +602,7 @@ function App() {
         </nav>
       </div>
 
-      {/* Tab Content */}
       <div>
-
-        {/* Home */}
         {activeTab === 'Home' && (
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
@@ -663,7 +655,6 @@ function App() {
                   valueColor={security?.['Defender']?.status ? '#4ade80' : '#ef4444'}
                 />
               </NavCard>
-
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
@@ -693,7 +684,6 @@ function App() {
           </div>
         )}
 
-        {/* Network */}
         {activeTab === 'Network' && (
           <NavCard title="Network Status" isDark={isDark}>
             <NavCardInfoRow label="Wifi Name" value={network?.['Wi-Fi']?.name} isDark={isDark} />
@@ -710,7 +700,6 @@ function App() {
           </NavCard>
         )}
 
-        {/* System */}
         {activeTab === 'System' && (
           <NavCard title="System Information" isDark={isDark}>
             <NavCardInfoRow label="CPU Usage" value={String(system?.['CPU']?.Usage) + ' %'} isDark={isDark} />
@@ -741,7 +730,6 @@ function App() {
           </NavCard>
         )}
 
-        {/* Security */}
         {activeTab === 'Security' && (
           <NavCard title="Security Information" isDark={isDark}>
             <p style={{ color: c.accent, fontWeight: 'bold', padding: '4px 0' }}>
@@ -793,7 +781,6 @@ function App() {
           </NavCard>
         )}
 
-        {/* Apps */}
         {activeTab === 'Apps' && (
           <NavCard title="Running Apps" isDark={isDark}>
             {apps?.map(app => (
@@ -808,7 +795,6 @@ function App() {
           </NavCard>
         )}
 
-        {/* Audio */}
         {activeTab === 'Audio' && (
           <NavCard title="Audio Information" isDark={isDark}>
             <NavCardInfoRow label="Volume" value={audio?.Volume + ' %'} isDark={isDark} />
@@ -827,7 +813,6 @@ function App() {
           </NavCard>
         )}
 
-        {/* Aura OS Chat */}
         {activeTab === 'Aura OS' && (
           <div
             style={{
@@ -840,7 +825,6 @@ function App() {
               overflow: 'hidden',
             }}
           >
-            {/* Chat Header */}
             <div
               style={{
                 padding: '12px 20px',
@@ -860,7 +844,6 @@ function App() {
               </p>
             </div>
 
-            {/* Messages */}
             <div
               className='chat-messages'
               style={{
@@ -929,7 +912,6 @@ function App() {
               <div ref={chatEndRef} />
             </div>
 
-            {/* Input */}
             <div
               style={{
                 borderTop: `1px solid ${c.border}`,

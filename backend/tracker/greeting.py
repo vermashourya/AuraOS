@@ -1,12 +1,9 @@
-# This will generate greeting message for Aura OS
-
 from datetime import datetime
 from tracker.activity_tracker import get_power_status , get_network_status , get_security_status
 from tracker.pattern_engine import get_top_app_per_hour
 from tracker.productivity_engine import get_productivity_report
 from tracker.prediction_engine import get_predictions
 
-# This will give the greeting according to the time
 def get_greeting_time():
     current_hour = datetime.now().hour
     if current_hour > 5 and current_hour < 12:
@@ -19,7 +16,6 @@ def get_greeting_time():
         return 'Good Night!'
 
 
-# This will give the perfect greeting message
 def get_greeting():
     greeting_time = get_greeting_time()
     power = get_power_status()
@@ -40,7 +36,6 @@ def get_greeting():
     else :
         next_app_line = "No specific app predicted for this hour"
 
-    # message = greeting_time + '\nBattery : ' + battery_info + '\nConnected to : ' + network['Wi-Fi']['name'] + ' ' + network['Wi-Fi']['signal'] + '\nYou usually use ' + top_app.get(current_hour , 'nothing specific') + ' at this hour' + '\nDefender is ' + ('Active' if security['Defender']['status'] else 'Inactive') + '\nTotal Session :' + str(report["total_session"]) + '\nAverage Work Duration :' + str(report["avg_duration"]) + '\nMost Productive Day :' + report["most_productive_day"] + '\nPeak working hours :' + str(report["peak_hours"])
 
     message = f"""
 {greeting_time}

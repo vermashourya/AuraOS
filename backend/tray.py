@@ -2,8 +2,7 @@ import threading
 import subprocess
 import sys
 import os
-import webbrowser
-from PIL import Image, ImageDraw
+from PIL import Image
 import pystray
 
 def create_icon_image():

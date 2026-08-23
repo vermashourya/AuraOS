@@ -1,5 +1,3 @@
-# This will help the AuraOS to predict the system stats
-
 import os
 import sqlite3
 from datetime import datetime
@@ -8,7 +6,7 @@ from collections import Counter
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'aura_memory.db')
 
-# This will predict when the battery will drain according to usage pattern
+
 def predict_battery_drain():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -33,7 +31,7 @@ def predict_battery_drain():
 
     return (round(avg_drain, 2))
 
-# This will predict that what app will be used next
+
 def predict_next_app():
     conn= sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -52,7 +50,7 @@ def predict_next_app():
         else:
             None
         
-# This will predict when you are going to close your system
+
 def predict_session_end():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -70,7 +68,7 @@ def predict_session_end():
 
     return Counter(logout).most_common(1)[0][0]
 
-# This will combine all predictions into one
+
 def get_predictions():
     return dict({
         'battery_drain': predict_battery_drain(),

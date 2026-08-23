@@ -1,5 +1,3 @@
-# By this Aura-OS learns the users working life pattern
-
 import ast 
 import os
 import sqlite3
@@ -9,7 +7,7 @@ from datetime import datetime
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR , 'aura_memory.db')
 
-# This will read active apps from database
+
 def get_snapshots():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -25,7 +23,7 @@ def get_snapshots():
     conn.close()
     return apps    
 
-# This will give the most used apps
+
 def get_most_used_apps():
     snapshots = get_snapshots()
     all_apps = [] 
@@ -36,7 +34,7 @@ def get_most_used_apps():
 
     return count.most_common(5)
 
-# This will give the apps according to time
+
 def get_apps_by_hour():
     snapshots = get_snapshots()
     hourly_apps = dict({})
@@ -48,7 +46,7 @@ def get_apps_by_hour():
 
     return hourly_apps
 
-# This will give the apps mostly used acoording by hours.
+
 def get_top_app_per_hour():
     hourly_apps = get_apps_by_hour()
     top_apps = dict({})

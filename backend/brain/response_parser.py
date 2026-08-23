@@ -16,7 +16,6 @@ def detect_response_type(response):
 
 def format_response(response, response_type):
     text = response.text.strip()
-    # strip the tag from the start
     for tag in TYPE_MAP:
         if text.startswith(tag):
             text = text[len(tag):].strip()
