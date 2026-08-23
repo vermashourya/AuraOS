@@ -5,6 +5,7 @@ import asyncio
 import edge_tts
 import ctypes
 import time
+import threading
 
 model = whisper.load_model('base')
 speaking = False
@@ -19,33 +20,32 @@ def transcribe(audio_bytes: bytes) -> str:
     finally:
         os.unlink(tmp_path)
 
+stop_event = threading.Event()
+
 async def speak_async(text: str):
-    global speaking
-    speaking = True
+    stop_event.clear()
     communicate = edge_tts.Communicate(text, voice='en-US-AriaNeural')
     with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as f:
         tmp_path = f.name
+    path = tmp_path.replace('"', '').replace("'",'')
     try:
         await communicate.save(tmp_path)
         winmm = ctypes.windll.winmm
-        winmm.mciSendStringW(f'open "{tmp_path}" type mpegvideo alias mp3', None, 0 , None)
-        winmm.mciSendStringW('play mp3 wait', None, 0 , None)
-        winmm.mciSendStringW('close mp3', None, 0 , None)
+        winmm.mciSendStringW(f'open "{path}" type mpegvideo alias mp3', None, 0 , None)
+        winmm.mciSendStringW('play mp3', None, 0 , None)
         buf = ctypes.create_unicode_buffer(128)
-        while speaking:
+        while not stop_event.is_set():
             winmm.mciSendStringW('status mp3 mode', buf, 128, None)
             if buf.value != 'playing':
-                break 
+                break
             time.sleep(0.2)
         winmm.mciSendStringW('stop mp3', None, 0, None)
         winmm.mciSendStringW('close mp3', None, 0, None)
     finally:
-        speaking = False
         os.unlink(tmp_path)
 
 def speak(text: str):
     asyncio.run(speak_async(text))
 
 def stop_speaking():
-    global speaking
-    speaking = False
+    stop_event.set()

@@ -28,62 +28,92 @@ def home():
 # This will send the battery info to the dashboard
 @app.get('/battery')
 def battery():
-    return get_power_status()
+    try:
+        return get_power_status()
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the network info to the dashboard
 @app.get('/network')
 def network():
-    return get_network_status()
+    try:
+        return get_network_status()
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the hardware info to the dashboard
 @app.get('/hardware')
 def hardware():
-    pythoncom.CoInitialize()
-    return get_hardware_status()
+    try:
+        pythoncom.CoInitialize()
+        return get_hardware_status()
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the audio info to the dashboard
 @app.get("/audio")
 def audio():
-    pythoncom.CoInitialize()
-    return get_audio_status()
+    try:
+        pythoncom.CoInitialize()
+        return get_audio_status()
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the security info to the dashboard
 @app.get("/security")
 def security():
-    pythoncom.CoInitialize()
-    return get_security_status()
+    try:
+        pythoncom.CoInitialize()
+        return get_security_status()
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the running apps info to the dashboard
 @app.get('/apps')
 def apps():
-    pythoncom.CoInitialize()
-    running = get_running_apps()
-    return {'apps':list(running)}
+    try:
+        pythoncom.CoInitialize()
+        running = get_running_apps()
+        return {'apps':list(running)}
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the greeting message to the dashboard
 @app.get('/greeting')
 def greet():
-    pythoncom.CoInitialize()
-    return {'message':get_greeting()}
+    try:
+        pythoncom.CoInitialize()
+        return {'message':get_greeting()}
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send the productivity report to the dashboard
 @app.get('/productivity')
 def report():
-    return get_productivity_report()
+    try:
+        return get_productivity_report()
+    except Exception as e :
+        return {'error' : str(e)}
 
 # This will send prediction report to the dashboard
 @app.get('/predictions')
 def prediction():
-    pythoncom.CoInitialize()
-    return get_predictions()
+    try:
+        pythoncom.CoInitialize()
+        return get_predictions()
+    except Exception as e :
+        return {'error' : str(e)}
 
 class Question(BaseModel):
     question : str
 
 @app.post('/ask')
 async def ask(request : Question):
-    pythoncom.CoInitialize()
-    response = ask_aura(request.question)
+    try:
+        pythoncom.CoInitialize()
+        response = ask_aura(request.question)
+    except Exception as e :
+        return {'error' : str(e)}
 
     return response
 
@@ -92,13 +122,17 @@ class Research(BaseModel):
 
 @app.post('/research')
 async def research(request : Research):
-    pythoncom.CoInitialize()
-    result = research_topic(request.query)
+    try:
+        pythoncom.CoInitialize()
+        result = research_topic(request.query)
+        return{
+                "query" : request.query,
+                "result" : result
+            }
+    except Exception as e :
+        return {'error' : str(e)}
 
-    return{
-        "query" : request.query,
-        "result" : result
-    }
+    
 
 # Chat History
 HISTORY_FILE = Path(__file__).parent / 'conversations.json'
@@ -108,30 +142,45 @@ class Messages(BaseModel):
 
 @app.get('/history')
 def get_history():
-    if not HISTORY_FILE.exists():
-        return {'messages': []}
-    with open (HISTORY_FILE, 'r') as f :
-        return json.load(f)
+    try:
+        if not HISTORY_FILE.exists():
+            return {'messages': []}
+        with open (HISTORY_FILE, 'r') as f :
+            return json.load(f)
+    except Exception as e :
+        return {'error' : str(e)}
     
 @app.post('/history/save')
 def save_history(request : Messages):
-    with open (HISTORY_FILE, 'w') as f :
-        json.dump({'messages': request.messages}, f)
-    return {'status': 'saved'}
+    try:
+        with open (HISTORY_FILE, 'w') as f :
+            json.dump({'messages': request.messages}, f)
+        return {'status': 'saved'}
+    except Exception as e :
+        return {'error' : str(e)}
 
 # Voice
 @app.post('/voice/input')
 async def voice_input(audio: UploadFile = File(...)):
-    audio_bytes = await audio.read()
-    transcript = transcribe(audio_bytes)
-    return {'transcript': transcript}
+    try:
+        audio_bytes = await audio.read()
+        transcript = transcribe(audio_bytes)
+        return {'transcript': transcript}
+    except Exception as e :
+        return {'error' : str(e)}
 
 @app.post('/voice/speak')
 async def voice_speak(request: Question):
-    threading.Thread(target=speak, args=(request.question,), daemon=True).start()
-    return {'status':'speaking'}
+    try:
+        threading.Thread(target=speak, args=(request.question,), daemon=True).start()
+        return {'status':'speaking'}
+    except Exception as e :
+        return {'error' : str(e)}
 
 @app.post('/voice/stop')
 def voice_stop():
-    stop_speaking()
-    return {'status': 'stopped'}
+    try:
+        stop_speaking()
+        return {'status': 'stopped'}
+    except Exception as e :
+        return {'error' : str(e)}

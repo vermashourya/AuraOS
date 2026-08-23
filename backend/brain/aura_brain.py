@@ -25,7 +25,8 @@ def build_system_prompt():
     return f'''Current CPU usage is {hardware['CPU']['Usage']} and RAM usage is {hardware['RAM']['Usage']}.
     Current battery level is {battery['Percent']} and battery charging status is {battery['Plugged in']}.
     Connected to {network['Wi-Fi']['name']} with connectivity strength {network['Wi-Fi']['signal']}.
-    Current time is {time} all currently running apps are{running_apps} and greeting message is {greeting}'''
+    Current time is {time} all currently running apps are{running_apps} and greeting message is {greeting}
+    Start your response with exactly one of these tags: [TEXT], [WEATHER], [CODE], [DATA]. Then give your response.'''
 
 def ask_aura(question):
     try: 

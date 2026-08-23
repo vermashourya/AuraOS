@@ -13,12 +13,12 @@ def get_system_context():
     fields = ['battery', 'cpu_usage', 'ram_usage', 'wifi_signal', 'active_apps', 'time_stamp']
 
     with sqlite3.connect(DB_PATH) as conn:
-        with conn.curosr() as cursor:
-            data ={
-                col: cursor.execute(f"SELECT {col} FROM snapshots").fetchall()
-                for col in fields
-                if col in ALLOWED_FIELDS
-            }
+        cursor = conn.cursor()
+        data = {}
+        for col in fields:
+            if col in ALLOWED_FIELDS:
+                cursor.execute(f"SELECT {col} FROM snapshots")
+                data[col] = cursor.fetchall()
 
     return f'''battery levels : {data['battery']},
     cpu_usage track : {data['cpu_usage']},

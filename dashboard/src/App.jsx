@@ -228,19 +228,20 @@ function App() {
         axios.post('http://127.0.0.1:8000/history/save', { messages: updated })
         return updated
       })
-      const speakResponse = (text) => {
-        setIsSpeaking(true)
-        axios.post('http://127.0.0.1:8000/voice/speak', {question: data.content})
-        const words = text.split(' ').length
-        const ms = Math.max(3000, (words/130)*60*1000)
-        speakTimerRef = setTimeout(() => setIsSpeaking(false), ms)
-      }
       speakResponse(data.content)
     } catch (error) {
       console.error(error)
     } finally {
       setLoading(false)
     }
+  }
+  
+  const speakResponse = (text) => {
+    setIsSpeaking(true)
+    axios.post('http://127.0.0.1:8000/voice/speak', {question: text})
+    const words = text.split(' ').length
+    const ms = Math.max(3000, (words/130)*60*1000)
+    speakTimerRef.current = setTimeout(() => setIsSpeaking(false), ms)
   }
   
   const handleNameSubmit = () => {
@@ -268,13 +269,6 @@ function App() {
         axios.post('http://127.0.0.1:8000/history/save', {messages: updated})
         return updated
       })
-      const speakResponse = (text) => {
-        setIsSpeaking(true)
-        axios.post('http://127.0.0.1:8000/voice/speak', {question: data.content})
-        const words = text.split(' ').length
-        const ms = Math.max(3000, (words/130)*60*1000)
-        speakTimerRef = setTimeout(() => setIsSpeaking(false), ms)
-      }
       speakResponse(data.content)
     }catch(error){
       console.error(error)
@@ -293,6 +287,7 @@ function App() {
   }
 
   const stopRecording = async () => {
+    if(!mediaRecorderRef.current) return
     mediaRecorderRef.current.stop()
     setIsRecording(false)
     mediaRecorderRef.current.onstop = async () => {
@@ -763,7 +758,7 @@ function App() {
         {/* Audio */}
         {activeTab === 'Audio' && (
           <NavCard title="Audio Information" isDark={isDark}>
-            <NavCardInfoRow label="Volume" value={audio?.Volume} isDark={isDark} />
+            <NavCardInfoRow label="Volume" value={audio?.Volume + ' %'} isDark={isDark} />
             <ProgressBar
               value={audio?.Volume}
               color={audio?.Volume > 70 ? '#ef4444' : audio?.Volume > 30 ? '#4ade80' : 'grey'}
