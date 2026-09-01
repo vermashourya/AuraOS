@@ -107,12 +107,13 @@ def prediction():
 
 class Question(BaseModel):
     question : str
+    username : str = 'User'
 
 @app.post('/ask')
 async def ask(request : Question):
     try:
         pythoncom.CoInitialize()
-        response = ask_aura(request.question)
+        response = ask_aura(request.question, request.username)
     except Exception as e :
         logger.error(f'/ask failed: {e}')
         return {'error' : str(e)}

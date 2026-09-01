@@ -42,20 +42,24 @@ def extract_content(url):
 
 def research_topic(query):
     results = search_web(query)
-    return [
-        {
-            'title' : r['title'],
+    enriched = []
+    for r in results:
+        content = extract_content(r['url'])
+        enriched.append({
+            'title': r['title'],
             'url': r['url'],
             'snippet': r['snippet'],
-            'content': r['snippet']
-        }
-        for r in results
-    ]
+            'content': content[:3000] if content and not content.startswith('Error') else r['snippet']
+        })
+    return enriched
+
 
 LIVE_KEYWORDS = [
     "weather", "temperature", "forecast", "news", "latest", "current",
     "today", "stock", "price", "score", "live", "who won",
-    "what happened", "right now", "trending", "update", "recently"
+    "what happened", "right now", "trending", "update", "recently",
+    "aqi", "air quality", "pollution", "humidity", "wind", "rain",
+    "match", "result", "election", "breaking", "happening"
 ]
 
 def needs_web_search(question):

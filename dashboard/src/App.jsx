@@ -271,7 +271,7 @@ function App() {
       const response = await fetch('http://127.0.0.1:8000/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, username: auraName || 'User' }),
       })
       const data = await response.json()
       const newMsg = {role: 'aura os', content: data.content, type: data.type}
@@ -312,7 +312,7 @@ function App() {
       const response = await fetch('http://127.0.0.1:8000/ask', {
         method:'POST',
         headers:{'Content-Type': 'application/json'},
-        body: JSON.stringify({question}),
+        body: JSON.stringify({ question, username: auraName || 'User' }),
       })
       const data = await response.json()
       const newMsg = {role: 'aura os', content: data.content, type: data.type}
@@ -432,15 +432,19 @@ function App() {
     <div
       style={{
         background: c.bg,
-        minHeight: '100vh',
+        height: '100vh',
+        overflow: 'hidden',
         color: c.text,
-        padding: '32px',
         fontFamily: "'Space Grotesk', sans-serif",
         animation: 'fadeIn 0.4s ease',
         '--accent': c.accent,
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       <TitleBar isDark={isDark}/>
+      <div style={{ padding: '32px', flex: 1, overflowY: 'auto' }}>
+
       {showNamePrompt && (
         <div style={{
           position: 'fixed', 
@@ -996,6 +1000,7 @@ function App() {
           </div>
         )}
 
+      </div>
       </div>
     </div>
   )

@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from datetime import datetime
 from tracker.activity_tracker import get_running_apps, get_power_status, get_audio_status, get_hardware_status, get_network_status, get_security_status
 from tracker.greeting import get_greeting
-from brain.web_research import needs_web_search, research_topic
+from brain.web_research import research_topic
 from brain.context_engine import build_full_context
 from brain.gemini_client import get_gemini_response
 from brain.response_parser import parse_aura_response, detect_response_type
@@ -26,39 +26,64 @@ def build_system_prompt():
     Current time is {time} all currently running apps are{running_apps} and greeting message is {greeting}
     Start your response with exactly one of these tags: [TEXT], [WEATHER], [CODE], [DATA]. Then give your response.'''
 
-def ask_aura(question):
-    try: 
-        context = build_system_prompt() 
+def ask_aura(question, username='User'):
+    try:
+        context = build_system_prompt()
     except Exception:
         context = "System context not available"
 
-    try:   
-        need_web_search = needs_web_search(question)
-    except Exception:
-        need_web_search = False
-
-    web_context = ""
-    if need_web_search:
-        try:
-            results = research_topic(question)
-            web_context = "\n\n".join(
-                f"Source: {r['title']}\n{r['snippet']}\n{r['content'][:1000]}"
-                for r in results
-            )
-        except Exception as e:
-            logging.warning("build_full_context falied : %s", e)
-
+    # First attempt — no web search
     prompt = f'''You are Aura, an AI assistant embedded in AuraOS.
+    The user's name is {username}. Address them as {username}, never as "Aura".
     System state: {context}
-    {"Web research results (use this as your primary source): " + web_context if web_context else ""}
     User question: {question}
-    Answer helpfully and concisely based on the web results if available. Do NOT introduce yourself unless explicitly asked.'''
+    Answer helpfully and concisely. Do NOT introduce yourself unless explicitly asked.'''
 
     try:
         response = get_gemini_response(prompt)
-        response_type = detect_response_type(response)
         formatted = parse_aura_response(response)
-        return {'type': response_type, 'content': formatted}
-    except Exception as e :
-        logging.error("ask_aura failed: %s", e)
+    except Exception as e:
+        logging.error("ask_aura first attempt failed: %s", e)
         return {'type': 'text', 'content': 'Unavailable right now'}
+
+    # If Gemini admits it can't answer, trigger web search
+    CANT_ANSWER_PHRASES = [
+        "i don't have", "i do not have", "i cannot", "i can't",
+        "no access", "real-time", "real time", "live data",
+        "not able to", "unable to", "don't have access",
+        "i'm sorry", "i am sorry", "as of my", "my knowledge",
+        "i lack", "no information", "cannot provide"
+    ]
+    needs_web = any(p in formatted.lower() for p in CANT_ANSWER_PHRASES)
+
+    if needs_web:
+        web_context = ""
+        try:
+            results = research_topic(question)
+            web_context = "\n\n".join(
+                f"Source: {r['title']}\n{r['content'][:1000]}"
+                for r in results
+            )
+        except Exception as e:
+            logging.warning("web research failed: %s", e)
+
+        if web_context:
+            prompt = f'''You name is Aura, an AI assistant embedded in AuraOS.
+    The user's name is {username}. Always address the user by their name. 
+    Use the user's name naturally, only when it feels appropriate — not at the end of every response.
+    System state: {context}
+    Web research results (use this as your primary source): {web_context}
+    User question: {question}
+    Answer helpfully and concisely based on the web results. Do NOT introduce yourself unless explicitly asked.'''
+            try:
+                response = get_gemini_response(prompt)
+                formatted = parse_aura_response(response)
+            except Exception as e:
+                logging.error("ask_aura web attempt failed: %s", e)
+
+    try:
+        response_type = detect_response_type(response)
+    except Exception:
+        response_type = 'text'
+
+    return {'type': response_type, 'content': formatted}

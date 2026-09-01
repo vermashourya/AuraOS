@@ -97,15 +97,8 @@ body{
     animation: pulse 1.4s ease infinite;
 }
 
-.chat-messages::-webkit-scrollbar {
-    width: 4px;
-}
-.chat-messages::-webkit-scrollbar-track {
-    background: transparent;
-}
-.chat-messages::-webkit-scrollbar-thumb {
-    border-radius: 99px;
-}
+.chat-messages::-webkit-scrollbar { width: 0 !important; display: none !important; }
+.chat-messages { scrollbar-width: none !important; }
 
 .typing-dot {
     width: 6px;

@@ -119,7 +119,7 @@ and guides you every time you log in — like JARVIS for your computer.
 - ⬜ Auto startup on boot
 - ✅ System tray icon
 - ⬜ Windows installer (.exe)
-- ⬜ Error handling and logging
+- ✅ Error handling and logging
 - ✅ Works on any Windows machine
 
 ## Built by
