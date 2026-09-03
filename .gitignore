@@ -6,4 +6,11 @@ __pycache__/
 .vscode/
 context/
 release/
-build.bat
+memory-bank/
+backend/dist/
+backend/build/
+backend/logs/
+CLAUDE.md
+CONVERSATION_HISTORY.md
+build/
+dist/

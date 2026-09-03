@@ -7,8 +7,8 @@ APP_NAME = 'Vision'
 
 def get_startup_command():
     pythonw = os.path.join(os.path.dirname(sys.executable), 'pythonw.exe')
-    main_py = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tracker', 'main.py')
-    return f'"{pythonw}" "{main_py}" '
+    launcher_py = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'launcher.py')
+    return f'"{pythonw}" "{launcher_py}" '
 
 def enable_startup():
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_SET_VALUE)

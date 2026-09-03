@@ -31,7 +31,7 @@ def battery():
     try:
         return get_power_status()
     except Exception as e :
-        logger.error(f'/hardware failed: {e}')
+        logger.error(f'/battery failed: {e}')
         return {'error' : str(e)}
 
 

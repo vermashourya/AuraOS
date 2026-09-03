@@ -2,7 +2,7 @@ import threading
 import subprocess
 import sys
 import os
-from PIL import Image
+from PIL import Image, ImageDraw
 import pystray
 
 def get_base_dir():
@@ -11,16 +11,24 @@ def get_base_dir():
     return os.path.dirname(os.path.abspath(__file__))
 
 def create_icon_image():
-    return Image.open(os.path.join(get_base_dir(), 'icon.png')).convert('RGBA')
+    icon_path = os.path.join(get_base_dir(), 'icon.png')
+    if os.path.exists(icon_path):
+        return Image.open(icon_path).convert('RGBA')
+    # Fallback: create a simple solid color icon if file missing
+    img = Image.new('RGBA', (64, 64), color=(0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((4, 4, 60, 60), fill='#4ade80')
+    return img
 
 def open_dashboard(icon, item):
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    dashboard_dir = os.path.join(BASE_DIR, '..', 'dashboard')
-    subprocess.Popen(
-        ['npm', 'run', 'electron'],
-        cwd=os.path.normpath(dashboard_dir),
-        shell=True
-    )
+    import subprocess
+    try:
+        # Try to find and activate the Vision window
+        subprocess.run(['powershell', '-Command',
+                       '(New-Object -ComObject WScript.Shell).AppActivate("Vision")'],
+                      capture_output=True)
+    except:
+        pass
 
 def quit_aura(icon, item):
     icon.stop()

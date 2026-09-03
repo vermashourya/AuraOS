@@ -23,6 +23,8 @@ const LIGHT = {
   text: '#1c1917',
 }
 
+const API_BASE_URL = 'http://127.0.0.1:8000'
+
 function NavButton({ name, activeTab, setActiveTab, isDark }) {
   const c = isDark ? DARK : LIGHT
   return (
@@ -259,40 +261,42 @@ function App() {
 
   const c = isDark ? DARK : LIGHT
 
-  const sendMessage = async () => {
-    const question = input.trim()
-    if (!question) return
+  const sendMessage = async (questionText = null) => {
+    const question = questionText || input.trim()
+    if(!question) return
 
-    setMessages(prev => [...prev, { role: 'user', content: question }])
+    setMessages(prev => [...prev, {role: 'user', content: question}])
     setLoading(true)
     setInput('')
 
-    try {
-      const response = await fetch('http://127.0.0.1:8000/ask', {
+    try{
+      const response = await fetch(API_BASE_URL+ '/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, username: auraName || 'User' }),
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question, username: auraName || 'User'}),
       })
       const data = await response.json()
       const newMsg = {role: 'vision', content: data.content, type: data.type}
       setMessages(prev => {
         const updated = [...prev, newMsg]
-        axios.post('http://127.0.0.1:8000/history/save', { messages: updated })
+        axios.post(API_BASE_URL+ '/history/save', {messages: updated})
         return updated
       })
       speakResponse(data.content)
-    } catch (error) {
+    }
+    catch(error){
       console.error(error)
-    } finally {
+    }
+    finally {
       setLoading(false)
     }
   }
   
   const speakResponse = (text) => {
     setIsSpeaking(true)
-    axios.post('http://127.0.0.1:8000/voice/speak', {question: text})
+    axios.post(API_BASE_URL+ '/voice/speak', {question: text})
     const words = text.split(' ').length
-    const ms = Math.max(3000, (words/130)*60*1000)
+    const ms = Math.max(3000, (words/2.17)*1000)
     speakTimerRef.current = setTimeout(() => setIsSpeaking(false), ms)
   }
   
@@ -301,32 +305,6 @@ function App() {
     localStorage.setItem('auraName', name)
     setAuraName(name)
     setShowNamePrompt(false)
-  }
-
-  const sendMessageWithText = async (question) => {
-    if(!question) return
-    setMessages(prev => [...prev, {role: 'user', content: question}])
-    setLoading(true)
-    setInput('')
-    try{
-      const response = await fetch('http://127.0.0.1:8000/ask', {
-        method:'POST',
-        headers:{'Content-Type': 'application/json'},
-        body: JSON.stringify({ question, username: auraName || 'User' }),
-      })
-      const data = await response.json()
-      const newMsg = {role: 'vision', content: data.content, type: data.type}
-      setMessages(prev => {
-        const updated = [...prev, newMsg]
-        axios.post('http://127.0.0.1:8000/history/save', {messages: updated})
-        return updated
-      })
-      speakResponse(data.content)
-    }catch(error){
-      console.error(error)
-    }finally{
-      setLoading(false)
-    }
   }
 
   const startRecording = async () => {
@@ -348,11 +326,11 @@ function App() {
         const blob = new Blob(audioChunksRef.current, {type: 'audio/wav'})
         const formData = new FormData()
         formData.append('audio', blob, 'recording.wav')
-        const res = await axios.post('http://127.0.0.1:8000/voice/input', formData)
+        const res = await axios.post(API_BASE_URL+ '/voice/input', formData)
         const transcript = res.data.transcript
         if (transcript){
           setInput(transcript)
-          sendMessageWithText(transcript)
+          sendMessage(transcript)
         }
       }
       finally{
@@ -361,17 +339,16 @@ function App() {
     }
   }
 
-
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/history')
+    axios.get(API_BASE_URL+ '/history')
       .then(res => {if (res.data.messages?.length) setMessages(res.data.messages)})
 
-    axios.get('http://127.0.0.1:8000/greeting')
+    axios.get(API_BASE_URL+ '/greeting')
       .then(response => setGreeting(response.data.message))
 
     const fetchInstant = async () => {
       try{
-        const r1 = await axios.get('http://127.0.0.1:8000/audio')
+        const r1 = await axios.get(API_BASE_URL+ '/audio')
         setAudio(r1.data)
       }catch (error){
         console.error('Error Fetching Instant data:', error)
@@ -380,9 +357,9 @@ function App() {
 
     const fetchFastData = async () => {
       try {
-        const r1 = await axios.get('http://127.0.0.1:8000/hardware')
+        const r1 = await axios.get(API_BASE_URL+ '/hardware')
         setSystem(r1.data)
-        const r2 = await axios.get('http://127.0.0.1:8000/battery')
+        const r2 = await axios.get(API_BASE_URL+ '/battery')
         setBattery(r2.data)
       } catch (error) {
         console.error('Error fetching fast data:', error)
@@ -391,15 +368,15 @@ function App() {
 
     const fetchSlowData = async () => {
       try {
-        const r1 = await axios.get('http://127.0.0.1:8000/network')
+        const r1 = await axios.get(API_BASE_URL+ '/network')
         setNetwork(r1.data)
-        const r2 = await axios.get('http://127.0.0.1:8000/security')
+        const r2 = await axios.get(API_BASE_URL+ '/security')
         setSecurity(r2.data)
-        const r3 = await axios.get('http://127.0.0.1:8000/apps')
+        const r3 = await axios.get(API_BASE_URL+ '/apps')
         setApps(r3.data.apps)
-        const r4 = await axios.get('http://127.0.0.1:8000/productivity')
+        const r4 = await axios.get(API_BASE_URL+ '/productivity')
         setProductivity(r4.data)
-        const r5 = await axios.get('http://127.0.0.1:8000/predictions')
+        const r5 = await axios.get(API_BASE_URL+ '/predictions')
         setPrediction(r5.data)
       } catch (error) {
         console.error('Error fetching slow data:', error)
@@ -977,7 +954,7 @@ function App() {
                 isSpeaking && (
                   <button
                     onClick={() => {
-                      axios.post('http://127.0.0.1:8000/voice/stop')
+                      axios.post(API_BASE_URL+ '/voice/stop')
                       clearTimeout(speakTimerRef.current)
                       setIsSpeaking(false)
                     }}

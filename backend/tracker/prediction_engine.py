@@ -47,8 +47,8 @@ def predict_next_app():
         
         if time == curr_time:
             return Counter(apps).most_common(1)[0][0]
-        else:
-            None
+    return 'Unknown'
+            
         
 
 def predict_session_end():

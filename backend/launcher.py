@@ -1,24 +1,20 @@
-# Single entry point for AuraOS — starts tracker + API server
 import threading
 import sys
 import os
 
-# Redirect None streams when frozen with --noconsole
 if sys.stdout is None:
     sys.stdout = open(os.devnull, 'w')
 if sys.stderr is None:
     sys.stderr = open(os.devnull, 'w')
 
-# When frozen by PyInstaller, files are extracted to sys._MEIPASS
 if getattr(sys, 'frozen', False):
     BASE_DIR = sys._MEIPASS
-    # exe lives one level above _MEIPASS — use that for writable files (logs, db)
+    
     WRITE_DIR = os.path.dirname(sys.executable)
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     WRITE_DIR = BASE_DIR
 
-# Add BASE_DIR to path so api.py and all modules are importable
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
@@ -49,12 +45,9 @@ UVICORN_LOG_CONFIG = {
 }
 
 def start_tracker():
-    # Import and run tracker directly — subprocess won't work when frozen
-    # since sys.executable is the .exe, not python.exe
-    from tracker.main import start_aura, take_snapshot, stop_aura, start_tray_thread
+    from tracker.main import start_aura, take_snapshot, stop_aura
     import time
     session_id = start_aura()
-    start_tray_thread()
     try:
         while True:
             take_snapshot(session_id)
@@ -62,10 +55,22 @@ def start_tracker():
     except Exception:
         stop_aura(session_id)
 
+def start_tray():
+    import time
+    time.sleep(2) # Give API time to start
+    from tray import start_tray_thread
+    start_tray_thread()
+
 def start_api():
     import uvicorn
     uvicorn.run('api:app', host='127.0.0.1', port=8000, log_config=UVICORN_LOG_CONFIG)
 
 if __name__ == '__main__':
+    # Start tracker daemon
     threading.Thread(target=start_tracker, daemon=True).start()
+
+    # Start tray daemon separately so a crash in tracker doesn't kill tray
+    threading.Thread(target=start_tray, daemon=True).start()
+
+    # Keep main thread for API
     start_api()

@@ -10,7 +10,11 @@ function startBackend() {
     if (isDev) return  // dev: backend started manually
 
     const backendExe = path.join(process.resourcesPath, 'backend', 'auraos_backend.exe')
-    backendProcess = spawn(backendExe, [], { detached: false })
+    backendProcess = spawn(backendExe, [], {
+        detached: false,
+        windowsHide: true,
+        stdio: 'ignore'
+    })
 }
 
 function createWindow() {
@@ -36,13 +40,29 @@ function createWindow() {
         mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'))
     }
 
+    // Enable DevTools for debugging
+    mainWindow.webContents.openDevTools()
+
     mainWindow.on('closed', () => { mainWindow = null })
 }
 
 ipcMain.on('minimize', () => { if (mainWindow) mainWindow.minimize() })
 ipcMain.on('maximize', () => { if (mainWindow) mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize() })
-ipcMain.on('close', () => { if (mainWindow) mainWindow.hide() })
-ipcMain.on('show-window', () => { if (mainWindow) mainWindow.show() })
+ipcMain.on('close', () => {
+    if (mainWindow) {
+        mainWindow.hide()
+        // Prevent app from quitting when window is hidden
+        if (process.platform !== 'darwin') {
+            mainWindow.setSkipTaskbar(true)
+        }
+    }
+})
+ipcMain.on('show-window', () => {
+    if (mainWindow) {
+        mainWindow.show()
+        mainWindow.setSkipTaskbar(false)
+    }
+})
 ipcMain.on('hide-window', () => { if (mainWindow) mainWindow.hide() })
 
 app.whenReady().then(() => {

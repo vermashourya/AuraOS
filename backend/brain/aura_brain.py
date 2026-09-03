@@ -5,7 +5,6 @@ from datetime import datetime
 from tracker.activity_tracker import get_running_apps, get_power_status, get_audio_status, get_hardware_status, get_network_status, get_security_status
 from tracker.greeting import get_greeting
 from brain.web_research import research_topic
-from brain.context_engine import build_full_context
 from brain.gemini_client import get_gemini_response
 from brain.response_parser import parse_aura_response, detect_response_type
 import logging
