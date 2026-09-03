@@ -193,7 +193,7 @@ function TitleBar({isDark}){
         fontSize: '13px',
         color: c.label
       }}>
-        AURA OS
+        VISION
       </span>
       <div style={{
         display:'flex',
@@ -274,7 +274,7 @@ function App() {
         body: JSON.stringify({ question, username: auraName || 'User' }),
       })
       const data = await response.json()
-      const newMsg = {role: 'aura os', content: data.content, type: data.type}
+      const newMsg = {role: 'vision', content: data.content, type: data.type}
       setMessages(prev => {
         const updated = [...prev, newMsg]
         axios.post('http://127.0.0.1:8000/history/save', { messages: updated })
@@ -297,7 +297,7 @@ function App() {
   }
   
   const handleNameSubmit = () => {
-    const name = nameInput.trim() || 'Aura OS'
+    const name = nameInput.trim() || 'Vision'
     localStorage.setItem('auraName', name)
     setAuraName(name)
     setShowNamePrompt(false)
@@ -315,7 +315,7 @@ function App() {
         body: JSON.stringify({ question, username: auraName || 'User' }),
       })
       const data = await response.json()
-      const newMsg = {role: 'aura os', content: data.content, type: data.type}
+      const newMsg = {role: 'vision', content: data.content, type: data.type}
       setMessages(prev => {
         const updated = [...prev, newMsg]
         axios.post('http://127.0.0.1:8000/history/save', {messages: updated})
@@ -542,10 +542,10 @@ function App() {
               borderRadius: '50%',
               backgroundColor: c.accent,
               marginRight: '12px',
-            }} /> {auraName ? `${auraName}'s` : 'Aura'} — AI Assistant
+            }} /> {auraName ? `${auraName}'s` : 'Vision'} — AI Assistant
           </h1>
           <p style={{ color: c.label, fontSize: '14px' }}>
-            Aura OS Intelligent desktop companion
+            Vision — Intelligent desktop companion
           </p>
         </div>
 
@@ -594,7 +594,7 @@ function App() {
         }}
       >
         <nav>
-          {['Home', 'Network', 'System', 'Security', 'Apps', 'Audio', 'Aura OS'].map(tab => (
+          {['Home', 'Network', 'System', 'Security', 'Apps', 'Audio', 'Vision'].map(tab => (
             <NavButton
               key={tab}
               name={tab}
@@ -817,7 +817,7 @@ function App() {
           </NavCard>
         )}
 
-        {activeTab === 'Aura OS' && (
+        {activeTab === 'Vision' && (
           <div
             style={{
               height: '60vh',
@@ -844,7 +844,7 @@ function App() {
                   margin: 0,
                 }}
               >
-                {auraName ? `${auraName}'s - Assistant` : 'Aura - AI Assistant'}
+                {auraName ? `${auraName}'s - Assistant` : 'Vision - AI Assistant'}
               </p>
             </div>
 
@@ -868,7 +868,7 @@ function App() {
                     marginTop: '40px',
                   }}
                 >
-                  Ask Aura anything about your system or anything else...
+                  Ask Vision anything about your system or anything else...
                 </p>
               )}
 
@@ -929,7 +929,7 @@ function App() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') sendMessage() }}
-                placeholder="Ask Aura..."
+                placeholder="Ask Vision..."
                 style={{
                   flex: 1,
                   background: c.bg,

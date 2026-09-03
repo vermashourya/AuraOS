@@ -1,17 +1,14 @@
-import os 
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from google import genai
-from google.genai import types
-from dotenv import load_dotenv
+import requests
 
-load_dotenv()
+PROXY_URL = "https://auraos-proxy.onrender.com/gemini"
+
+class ProxyResponse:
+    def __init__(self, text):
+        self.text = text
 
 def get_gemini_response(prompt):
-    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-    response = client.models.generate_content(
-        contents = prompt,
-        model='gemini-2.5-flash',
-    )
-
-    return response
+    response = requests.post(PROXY_URL, json={"prompt": prompt}, timeout=60)
+    data = response.json()
+    if "error" in data:
+        raise Exception(data["error"])
+    return ProxyResponse(data["text"])

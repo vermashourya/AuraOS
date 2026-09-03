@@ -118,7 +118,7 @@ and guides you every time you log in — like JARVIS for your computer.
 ### Phase 6 - Market Ready
 - ⬜ Auto startup on boot
 - ✅ System tray icon
-- ⬜ Windows installer (.exe)
+- ✅ Windows installer (.exe)
 - ✅ Error handling and logging
 - ✅ Works on any Windows machine
 

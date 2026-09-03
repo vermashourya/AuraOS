@@ -1,6 +1,5 @@
 import logging
 import os
-from datetime import datetime
 
 LOG_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -12,7 +11,6 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s] %(message)s',
     handlers=[
         logging.FileHandler(LOG_FILE, encoding='utf-8'),
-        logging.StreamHandler()
     ]
 )
 logger = logging.getLogger('AuraOS')

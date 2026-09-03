@@ -11,7 +11,7 @@ model = whisper.load_model('base')
 speaking = False
 
 def transcribe(audio_bytes: bytes) -> str:
-    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f :
+    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
         f.write(audio_bytes)
         tmp_path = f.name
     try:
@@ -24,15 +24,15 @@ stop_event = threading.Event()
 
 async def speak_async(text: str):
     stop_event.clear()
-    communicate = edge_tts.Communicate(text, voice='en-US-AriaNeural')
+    communicate = edge_tts.Communicate(text, voice='en-GB-RyanNeural')
     with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as f:
         tmp_path = f.name
     path = tmp_path.replace('"', '').replace("'",'')
     try:
         await communicate.save(tmp_path)
         winmm = ctypes.windll.winmm
-        winmm.mciSendStringW(f'open "{path}" type mpegvideo alias mp3', None, 0 , None)
-        winmm.mciSendStringW('play mp3', None, 0 , None)
+        winmm.mciSendStringW(f'open "{path}" type mpegvideo alias mp3', None, 0, None)
+        winmm.mciSendStringW('play mp3', None, 0, None)
         buf = ctypes.create_unicode_buffer(128)
         while not stop_event.is_set():
             winmm.mciSendStringW('status mp3 mode', buf, 128, None)

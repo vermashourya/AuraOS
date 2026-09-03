@@ -9,6 +9,20 @@ from brain.context_engine import build_full_context
 from brain.gemini_client import get_gemini_response
 from brain.response_parser import parse_aura_response, detect_response_type
 import logging
+import threading
+import requests
+
+PROXY_URL = "https://auraos-proxy.onrender.com"
+
+def keep_proxy_alive():
+    while True:
+        try:
+            requests.get(PROXY_URL, timeout=10)
+        except Exception:
+            pass
+        threading.Event().wait(840)
+
+threading.Thread(target=keep_proxy_alive, daemon=True).start()
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -32,9 +46,9 @@ def ask_aura(question, username='User'):
     except Exception:
         context = "System context not available"
 
-    # First attempt — no web search
-    prompt = f'''You are Aura, an AI assistant embedded in AuraOS.
-    The user's name is {username}. Address them as {username}, never as "Aura".
+    prompt = f'''Your name is Vision, an AI assistant embedded in AuraOS — inspired by the Vision supercomputer from Iron Man, created by Tony Stark.
+    You are highly intelligent, calm, precise, and speak with a refined tone.
+    The user's name is {username}. Use the user's name naturally, only when it feels appropriate — not in every response.
     System state: {context}
     User question: {question}
     Answer helpfully and concisely. Do NOT introduce yourself unless explicitly asked.'''
@@ -46,7 +60,6 @@ def ask_aura(question, username='User'):
         logging.error("ask_aura first attempt failed: %s", e)
         return {'type': 'text', 'content': 'Unavailable right now'}
 
-    # If Gemini admits it can't answer, trigger web search
     CANT_ANSWER_PHRASES = [
         "i don't have", "i do not have", "i cannot", "i can't",
         "no access", "real-time", "real time", "live data",
@@ -68,9 +81,9 @@ def ask_aura(question, username='User'):
             logging.warning("web research failed: %s", e)
 
         if web_context:
-            prompt = f'''You name is Aura, an AI assistant embedded in AuraOS.
-    The user's name is {username}. Always address the user by their name. 
-    Use the user's name naturally, only when it feels appropriate — not at the end of every response.
+            prompt = f'''Your name is Vision, an AI assistant embedded in AuraOS — inspired by the Vision supercomputer from Iron Man, created by Tony Stark.
+    You are highly intelligent, calm, precise, and speak with a refined tone.
+    The user's name is {username}. Use the user's name naturally, only when it feels appropriate — not in every response.
     System state: {context}
     Web research results (use this as your primary source): {web_context}
     User question: {question}

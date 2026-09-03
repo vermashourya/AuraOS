@@ -3,7 +3,7 @@ import sys
 import os
 
 REGISTRY_KEY = r'Software\Microsoft\Windows\CurrentVersion\Run'
-APP_NAME = 'AuraOS' 
+APP_NAME = 'Vision'
 
 def get_startup_command():
     pythonw = os.path.join(os.path.dirname(sys.executable), 'pythonw.exe')
@@ -28,6 +28,6 @@ def is_startup_enabled():
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REGISTRY_KEY, 0, winreg.KEY_READ)
         winreg.QueryValueEx(key, APP_NAME)
         winreg.CloseKey(key)
-        return True 
+        return True
     except FileNotFoundError:
         return False
